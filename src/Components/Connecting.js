@@ -7,7 +7,7 @@ function Setting({localVideoRef,onContinue}) {
     const audioOutputEl =useRef(null);
     const videoInputEl =useRef(null);
     const [isLoading,setIsLoading] = useState(false);
-    const {cons ,setCons,setting, setSetting} = useFriend();
+    const {setCons,} = useFriend();
     const getStream = useCallback(async () => {
         try{
           const permission =  await navigator.mediaDevices.getUserMedia({video:true,audio:true});
@@ -115,9 +115,7 @@ function Setting({localVideoRef,onContinue}) {
        </div>
      
      </div>
-     <button onClick={() => {
-  setSetting("ok");
-}} className="bg-blf text-blm shadow-sm shadow-black w-full py-2 rounded-full text-lg">Continue</button>
+     <button onClick={onContinue} className="bg-blf text-blm shadow-sm shadow-black w-full py-2 rounded-full text-lg">Continue</button>
     </div>
     </div>
     </React.Fragment>
