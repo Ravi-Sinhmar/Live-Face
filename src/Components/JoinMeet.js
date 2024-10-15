@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactPlayer from "react-player";
 import { useSearchParams } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import { useFriend } from "./../Contexts/Friend";
 import { usePeer } from "./../Contexts/Peer";
@@ -29,9 +29,9 @@ function JoinMeet() {
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
- 
+
   // contexts
-  const {adminCon, setAdminCon } = useFriend();
+  const { adminCon, setAdminCon } = useFriend();
   const {
     peer,
     createOffer,
@@ -39,7 +39,7 @@ function JoinMeet() {
     setRemoteAnswer,
     sendVideo,
     remoteStream,
-    disconnect
+    disconnect,
   } = usePeer();
 
   const handleInputChange = (event) => {
@@ -48,7 +48,6 @@ function JoinMeet() {
     uName = uName.toLowerCase().replace(/\s+/g, "");
     setUserName(uName);
   };
-
 
   const seeMeet = useCallback(() => {
     const ad = searchParams.get("adminName");
@@ -78,30 +77,29 @@ function JoinMeet() {
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,setAdminCon,adminName,meetingId]);
+  }, [searchParams, setAdminCon, adminName, meetingId]);
   useEffect(() => {
     seeMeet();
-  },[seeMeet]);
+  }, [seeMeet]);
 
-
-const startAdminSocket = useCallback(() => {
-      if (needWebSocket && admin) {
-        const newSocket = new WebSocket(
-          `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.ad`
-        );
-        setAdminSocket(newSocket);
-      }
+  const startAdminSocket = useCallback(() => {
+    if (needWebSocket && admin) {
+      const newSocket = new WebSocket(
+        `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.ad`
+      );
+      setAdminSocket(newSocket);
+    }
   }, [needWebSocket, admin, meetingId]);
 
   const startUserSocket = useCallback(() => {
     if (needWebSocket && user && joined) {
-        const cleanName = userName.toLowerCase().replace(/\s+/g, "");
-        const newSocket = new WebSocket(
-          `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.us`
-        );
-        setUserSocket(newSocket);
+      const cleanName = userName.toLowerCase().replace(/\s+/g, "");
+      const newSocket = new WebSocket(
+        `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.us`
+      );
+      setUserSocket(newSocket);
     }
-  }, [needWebSocket, meetingId, userName, user,joined]);
+  }, [needWebSocket, meetingId, userName, user, joined]);
 
   useEffect(() => {
     startUserSocket();
@@ -118,7 +116,7 @@ const startAdminSocket = useCallback(() => {
   const handleUserSocketStatus = () => {
     setUserSocketStatus(true);
   };
-  
+
   useEffect(() => {
     if (adminSocket !== null) {
       adminSocket.addEventListener("open", handleAdminSocketStatus);
@@ -140,131 +138,153 @@ const startAdminSocket = useCallback(() => {
     };
   }, [adminSocket, userSocket]);
 
-
-
   const getMyVideo = useCallback(async () => {
     try {
       const video = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
-  
+
       setMyVideo(video);
-      console.log('Video tracks:', video.getVideoTracks());
-      console.log('Audio tracks:', video.getAudioTracks());
-  
+      console.log("Video tracks:", video.getVideoTracks());
+      console.log("Audio tracks:", video.getAudioTracks());
+
       // Set the video source to the `videoRef`
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = video;
-      
-        
-
       }
     } catch (error) {
-      console.error('Error accessing camera:', error);
+      console.error("Error accessing camera:", error);
     }
   }, []);
   useEffect(() => {
     getMyVideo();
   }, [getMyVideo]);
 
-
-  const getRemoteVideo = useCallback(()=>{
+  const getRemoteVideo = useCallback(() => {
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
     }
-  },[remoteStream]);
+  }, [remoteStream]);
 
-  useEffect(()=>{
+  useEffect(() => {
     getRemoteVideo();
-  },[getRemoteVideo]);
+  }, [getRemoteVideo]);
 
-  useEffect(()=>{
-if(adminSocketStatus){
-  const wsMessage = {
-    admin:true,
-    cleanUserName: adminCon,
-    fullUserName:"updateMe",
-    cleanFriendName : "updateMe",
-    fullFiendName:"updateMe",
-  };
-  const adminMessageListener =async (event)=>{
-    const data = JSON.parse(event.data);
-    // if Someone Reset or Refresh or Firsttime going on link
- if (data.type === "userOn" || data.type === "askingOffer") {
-  const offer = await createOffer();
-  setFinalOffer(offer);
-  adminSocket.send(JSON.stringify({ ...wsMessage,type:"sendingOffer",content: offer}));
- };
-//  Getting Anser
- if (data.type === "sendingAnswer") {
-  await setRemoteAnswer(data.content);
- };
+  useEffect(() => {
+    if (adminSocketStatus) {
+      const wsMessage = {
+        admin: true,
+        cleanUserName: adminCon,
+        fullUserName: "updateMe",
+        cleanFriendName: "updateMe",
+        fullFiendName: "updateMe",
+      };
+      const adminMessageListener = async (event) => {
+        const data = JSON.parse(event.data);
+        // if Someone Reset or Refresh or Firsttime going on link
+        if (data.type === "userOn" || data.type === "askingOffer") {
+          const offer = await createOffer();
+          setFinalOffer(offer);
+          adminSocket.send(
+            JSON.stringify({
+              ...wsMessage,
+              type: "sendingOffer",
+              content: offer,
+            })
+          );
+        }
+        //  Getting Anser
+        if (data.type === "sendingAnswer") {
+          await setRemoteAnswer(data.content);
+        }
 
- //  neg Anser
- if (data.type === "negAnswer") {
-  await setRemoteAnswer(data.content);
-};
+        //  neg Anser
+        if (data.type === "negAnswer") {
+          await setRemoteAnswer(data.content);
+        }
       };
 
+      adminSocket.send(JSON.stringify({ ...wsMessage, type: "adminOn" }));
+      // Listening for messages
+      adminSocket.addEventListener("message", adminMessageListener);
+      return () => {
+        adminSocket.removeEventListener("message", adminMessageListener);
+      };
+    }
 
-  adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
-   // Listening for messages 
-   adminSocket.addEventListener("message", adminMessageListener);
-  return () => {
-    adminSocket.removeEventListener("message", adminMessageListener);
-  };
+    if (userSocketStatus && joined) {
+      const wsMessage = {
+        admin: false,
+        cleanUserName: userName,
+        fullUserName: fullName,
+        cleanFriendName: adminCon,
+        fullFiendName: "updateMe",
+      };
+      const userMessageListener = async (event) => {
+        const data = JSON.parse(event.data);
+        // If admin Reset or refresh
+        if (data.type === "adminOn") {
+          userSocket.send(
+            JSON.stringify({ ...wsMessage, type: "askingOffer" })
+          );
+        }
 
-};
+        // If getting offer
+        if (data.type === "sendingOffer") {
+          const answer = await createAnswer(data.content);
+          userSocket.send(
+            JSON.stringify({
+              ...wsMessage,
+              type: "sendingAnswer",
+              content: answer,
+            })
+          );
+        }
 
-if(userSocketStatus && joined){
-  const wsMessage = {
-    admin:false,
-    cleanUserName: userName,
-    fullUserName:fullName,
-    cleanFriendName :adminCon,
-    fullFiendName:"updateMe",
-  };
-  const userMessageListener = async(event)=>{
-    const data = JSON.parse(event.data);
-    // If admin Reset or refresh
-    if (data.type === "adminOn") {
-    userSocket.send(JSON.stringify({ ...wsMessage,type:"askingOffer"}));
-     };
+        // If neg need
+        if (data.type === "negNeed") {
+          const answer = await createAnswer(data.content);
+          userSocket.send(
+            JSON.stringify({ ...wsMessage, type: "negAnswer", content: answer })
+          );
+        }
+      };
 
-     // If getting offer
-     if (data.type === "sendingOffer") {
-      const answer = await createAnswer(data.content);
-      userSocket.send(JSON.stringify({ ...wsMessage,type:"sendingAnswer", content: answer}));
-       };
-
-         // If neg need
-     if (data.type === "negNeed") {
-      const answer = await createAnswer(data.content)
-      userSocket.send(JSON.stringify({ ...wsMessage,type:"negAnswer", content: answer}));
-       };
-            };
-
-  userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
-  userSocket.addEventListener("message", userMessageListener);
-return () => {
-  userSocket.removeEventListener("message", userMessageListener);
-};
-}
-  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer,setRemoteAnswer]);
+      userSocket.send(JSON.stringify({ ...wsMessage, type: "userOn" }));
+      userSocket.addEventListener("message", userMessageListener);
+      return () => {
+        userSocket.removeEventListener("message", userMessageListener);
+      };
+    }
+  }, [
+    adminSocketStatus,
+    userSocketStatus,
+    adminCon,
+    adminSocket,
+    userSocket,
+    userName,
+    joined,
+    fullName,
+    createAnswer,
+    createOffer,
+    setRemoteAnswer,
+  ]);
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
     const wsMessage = {
-      admin:true,
+      admin: true,
       cleanUserName: adminCon,
-      fullUserName:"updateMe",
-      cleanFriendName : "updateMe",
-      fullFiendName:"updateMe",
+      fullUserName: "updateMe",
+      cleanFriendName: "updateMe",
+      fullFiendName: "updateMe",
     };
     const offer = await createOffer();
-    adminSocket.send(JSON.stringify({ ...wsMessage,type:"negNeed",content: offer}));
-  }, [adminCon,adminSocket,createOffer]);
+    adminSocket.send(
+      JSON.stringify({ ...wsMessage, type: "negNeed", content: offer })
+    );
+  }, [adminCon, adminSocket, createOffer]);
 
   useEffect(() => {
     peer.addEventListener("negotiationneeded", handleNeg);
@@ -273,14 +293,11 @@ return () => {
     };
   }, [handleNeg, peer]);
 
- useEffect(() => {
+  useEffect(() => {
     if (handShake) {
       sendVideo(myVideo);
     }
   }, [handShake, sendVideo, myVideo]);
-
-
-
 
   // NavButton Functions..........
   const toggleMic = () => {
@@ -307,37 +324,46 @@ return () => {
     }
   };
 
-  const cutCall = ()=>{
+  const cutCall = () => {
     disconnect();
-    navigate("/")
+    navigate("/");
   };
 
-  const handleMore = useCallback(async()=>{
-   console.log("Click on More")
-  },[]);
-
-
+  const handleMore = useCallback(async () => {
+    console.log("Click on More");
+  }, []);
 
   // JSX Code
 
-  
-
   return (
     <div>
-{true ? (<React.Fragment> <input
- value={userName}
- onChange={handleInputChange}
-               
-                placeholder="Your name please"
-                className="border border-blt rounded-md py-2 bg-blm"
-                type="text"
-              />
-              <button onClick={()=>{setJoined(true)}}>JOIN</button>
-            </React.Fragment>
-          ) : null}
+      <div className="w-svw h-svh bg-blm  flex justify-center items-center ">
+        {!joined ? (
+          <div className="bg-blf h-full sm:w-1/2 md:w-1/4  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
 
-      {true ? (
-        <div className="w-svw h-svh bg-blm  flex justify-center items-center ">
+          
+          <div className="flex flex-col w-full h-full  px-2 justify-between items-center gap-2">
+            <label>Your name</label>
+            <input
+              value={fullName}
+              onChange={handleInputChange}
+              className=" border-[1px] border-blf w-4/5 py-2 px-3 bg-gray-100 rounded-full mt-8"
+              placeholder="Your name please"
+              type="text"
+            />
+            <button
+              className="bg-blf text-white rounded-full py-2 w-4/5 font-[500] text-lg mt-6"
+              onClick={() => {
+                setJoined(true);
+              }}
+            >
+              JOIN
+            </button>
+            </div>
+          </div>
+        ) : null}
+
+        {admin || joined ? (
           <div className="bg-blf h-full sm:w-1/2 md:w-1/4   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
@@ -356,7 +382,10 @@ return () => {
             </div>
             <div className="w-full bg-transparent  py-2 flex items-center justify-center">
               <div className="flex justify-between w-full rounded-md ring-2 ring-black items-center px-4 py-2 bg-blm h-fit ">
-                <button  onClick={toggleMic} className="flex flex-col text-sm items-center justify-center gap-1">
+                <button
+                  onClick={toggleMic}
+                  className="flex flex-col text-sm items-center justify-center gap-1"
+                >
                   <svg
                     className="size-8 p-1 rounded-full"
                     viewBox="0 0 24 24"
@@ -410,14 +439,17 @@ return () => {
                   <p>Mute</p>
                 </button>
 
-                <button  onClick={toggleVideo} className="flex flex-col text-sm items-center justify-center gap-1">
+                <button
+                  onClick={toggleVideo}
+                  className="flex flex-col text-sm items-center justify-center gap-1"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                     className="size-8 p-1 rounded-full"
+                    className="size-8 p-1 rounded-full"
                   >
                     <path
                       stroke-linecap="round"
@@ -427,14 +459,28 @@ return () => {
                   </svg>
                   Stop
                 </button>
-                <button  onClick={cutCall} className="flex flex-col text-sm items-center justify-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"  className="size-8 p-1 bg-ble text-blm rounded-full">
-  <path fill-rule="evenodd" d="M15.22 3.22a.75.75 0 0 1 1.06 0L18 4.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L19.06 6l1.72 1.72a.75.75 0 0 1-1.06 1.06L18 7.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L16.94 6l-1.72-1.72a.75.75 0 0 1 0-1.06ZM1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z" clip-rule="evenodd" />
-</svg>
-
+                <button
+                  onClick={cutCall}
+                  className="flex flex-col text-sm items-center justify-center gap-1"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="size-8 p-1 bg-ble text-blm rounded-full"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M15.22 3.22a.75.75 0 0 1 1.06 0L18 4.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L19.06 6l1.72 1.72a.75.75 0 0 1-1.06 1.06L18 7.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L16.94 6l-1.72-1.72a.75.75 0 0 1 0-1.06ZM1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
                   Disconnect
                 </button>
-                <button  onClick={toggleRemoteAudio}  className="flex flex-col text-sm items-center justify-center gap-1">
+                <button
+                  onClick={toggleRemoteAudio}
+                  className="flex flex-col text-sm items-center justify-center gap-1"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -452,7 +498,10 @@ return () => {
                   Silence
                 </button>
 
-                <button onClick={handleMore} className="flex flex-col text-sm items-center justify-center gap-1">
+                <button
+                  onClick={handleMore}
+                  className="flex flex-col text-sm items-center justify-center gap-1"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -469,14 +518,11 @@ return () => {
                   </svg>
                   More
                 </button>
-                
               </div>
             </div>
           </div>
-        </div>
-      ) : 
-      null
-      }
+        ) : null}
+      </div>
     </div>
   );
 }
