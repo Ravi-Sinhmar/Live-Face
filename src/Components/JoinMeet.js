@@ -3,8 +3,10 @@ import ReactPlayer from "react-player";
 import { useSearchParams } from "react-router-dom";
 import { useFriend } from "./../Contexts/Friend";
 import { usePeer } from "./../Contexts/Peer";
+import { useNavigate } from "react-router-dom";
 
 function JoinMeet() {
+  const navigate = useNavigate();
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
   const [adminName, setAdminName] = useState(null);
@@ -23,6 +25,10 @@ function JoinMeet() {
   const [adminSocketStatus, setAdminSocketStatus] = useState(false);
   const [userSocketStatus, setUserSocketStatus] = useState(false);
   const [myVideo, setMyVideo] = useState(null);
+  const [isMicEnabled, setIsMicEnabled] = useState(true);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+  const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
+  const [callStatus, setCallStatus] = useState("on");
   
  
   // contexts
@@ -33,7 +39,7 @@ function JoinMeet() {
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,
+    remoteStream,disconnect
   } = usePeer();
 
   const handleUserJoin = useCallback(() => {
@@ -287,6 +293,47 @@ return () => {
     }
   }, [handShake, sendVideo, myVideo]);
 
+
+
+   // NavButton Functions..........
+   const toggleMic = () => {
+    if (myVideo) {
+      const audioTrack = myVideo.getAudioTracks()[0];
+      audioTrack.enabled = !isMicEnabled;
+      setIsMicEnabled(!isMicEnabled);
+    }
+  };
+
+  const toggleVideo = () => {
+    if (myVideo) {
+      const videoTrack = myVideo.getVideoTracks()[0];
+      videoTrack.enabled = !isVideoEnabled;
+      setIsVideoEnabled(!isVideoEnabled);
+    }
+  };
+
+  const toggleRemoteAudio = () => {
+    if (remoteStream) {
+      const audioTrack = remoteStream.getAudioTracks()[0];
+      audioTrack.enabled = !isRemoteAudioEnabled;
+      setIsRemoteAudioEnabled(!isRemoteAudioEnabled);
+    }
+  };
+
+  const cutCall = async() => {
+   setCallStatus("off");
+   setTimeout(() => {
+   disconnect();
+    navigate("/");
+   }, 2000);
+  };
+
+  const handleMore = useCallback(async () => {
+    console.log("Click on More");
+  }, []);
+
+  // JSX Code
+
   return (
     <React.Fragment>
         <div className="w-svw h-svh bg-blm  flex justify-center items-center">
@@ -310,7 +357,7 @@ return () => {
             <div className="w-full bg-transparent  py-2 flex items-center justify-center">
               <div className="flex justify-between w-full rounded-md ring-2 ring-black items-center px-4 py-2 bg-blm h-fit ">
                 <button
-                  // onClick={toggleMic}
+                  onClick={toggleMic}
                   className="flex flex-col text-sm items-center justify-center gap-1"
                 >
                   <svg
@@ -367,7 +414,7 @@ return () => {
                 </button>
 
                 <button
-                  // onClick={toggleVideo}
+                  onClick={toggleVideo}
                   className="flex flex-col text-sm items-center justify-center gap-1"
                 >
                   <svg
@@ -387,7 +434,7 @@ return () => {
                   Stop
                 </button>
                 <button
-                  // onClick={cutCall}
+                  onClick={cutCall}
                   className="flex flex-col text-sm items-center justify-center gap-1"
                 >
                   <svg
@@ -405,7 +452,7 @@ return () => {
                   Disconnect
                 </button>
                 <button
-                  // onClick={toggleRemoteAudio}
+                  onClick={toggleRemoteAudio}
                   className="flex flex-col text-sm items-center justify-center gap-1"
                 >
                   <svg
@@ -426,7 +473,7 @@ return () => {
                 </button>
 
                 <button
-                  // onClick={handleMore}
+                  onClick={handleMore}
                   className="flex flex-col text-sm items-center justify-center gap-1"
                 >
                   <svg
