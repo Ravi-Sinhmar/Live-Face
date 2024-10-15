@@ -423,9 +423,8 @@ return () => {
   }, [callStatus2, myVideo]);
 
   const handleMore = useCallback(async () => {
-    setShowSetting(true);
-    setSetting(false);
-  }, [setSetting]);
+    window.location.reload();
+  }, []);
 
   // JSX Code
 
