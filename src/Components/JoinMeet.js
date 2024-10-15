@@ -48,7 +48,6 @@ function JoinMeet() {
         uName = uName.toLowerCase().replace(/\s+/g, "");
         setUserName(uName);
         tries++;  // Increment tries
-  
         await delay(500);  // Wait for 500ms
       }
       setJoined(true);
@@ -290,9 +289,9 @@ return () => {
 
   return (
     <React.Fragment>
-      <button onClick={handleUserJoin}>Join</button>
         <div className="bg-blf w-screen h-screen flex flex-col justify-between overflow-hidden">
           <video ref={localVideoRef} muted autoPlay playsInline className="absolute right-2 top-2 rounded-md object-cover h-24 w-16"></video>
+          <button className="w-fit px-2 text-sm font-[300] flex text-center items-center justify-center py-1 rounded-full bg-blf ring-1 ring-blm shadow-md shadow-blt absolute h-fit right-1/2 translate-x-1/2 bottom-10" onClick={handleUserJoin}>Join</button>
         <div className="flex flex-col justify-center items-center h-full">
         <video ref={remoteVideoRef} muted autoPlay playsInline className="rounded-md object-cover h-full "></video>
         </div>
