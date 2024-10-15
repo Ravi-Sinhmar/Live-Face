@@ -338,19 +338,19 @@ function JoinMeet() {
   return (
     <div>
       <div className="w-svw h-svh bg-blm  flex justify-center items-center ">
-        {!joined ? (
-          <div className="bg-blf h-full sm:w-1/2 md:w-1/4  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
-
-          
-          <div className="flex flex-col w-full h-full  px-2 justify-between items-center gap-2">
-            <label>Your name</label>
+        {!joined && !admin ? (
+          <div className="bg-blm h-full w-full sm:w-1/2 md:w-1/4  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          <div className="flex flex-col w-full h-full px-2 justify-center items-center gap-3">
+          <div className="flex flex-col gap-1 justify-center items-start">
+          <label className="text-sm">Your name</label>
             <input
               value={fullName}
               onChange={handleInputChange}
-              className=" border-[1px] border-blf w-4/5 py-2 px-3 bg-gray-100 rounded-full mt-8"
+              className=" border-[1px] border-blf w-4/5 py-2 px-3 bg-gray-100 rounded-md"
               placeholder="Your name please"
               type="text"
             />
+          </div>
             <button
               className="bg-blf text-white rounded-full py-2 w-4/5 font-[500] text-lg mt-6"
               onClick={() => {
