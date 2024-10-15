@@ -44,7 +44,7 @@ function JoinMeet() {
     disconnect
   } = usePeer();
 
-  useEffect(()=>{
+useEffect(()=>{
 if(user){
 setFullName("DummyNameOfUser");
 setUserName("dummynameOfuser");
@@ -159,9 +159,6 @@ const startAdminSocket = useCallback(() => {
       // Set the video source to the `videoRef`
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = video;
-      
-        
-
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
@@ -364,7 +361,12 @@ return () => {
   return (
     <div>
       <div className="w-svw h-svh bg-blm md:w-1/3 lg:h-1/4 flex justify-center items-center">
-        {admin || user ?  (
+      {user && !joined ? <button onClick={()=>{
+         setUserName("dummy");
+        setFullName("Dummy");
+        setJoined(true);
+        }}>Join</button> : null}
+        {admin || joined ?  (
           <div className="bg-transparent ring-2 rounded-lg h-full  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
