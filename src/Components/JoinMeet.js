@@ -71,7 +71,15 @@ function JoinMeet() {
     loopWithDelay();  // Start the loop
   }, []);
 
-  
+
+  useEffect(() => {
+    if (setting) {
+      handleUserJoin();  
+      handleUserJoin();
+      handleUserJoin();
+    }
+  }, [setting, handleUserJoin]);
+
 
   const seeMeet = useCallback(() => {
     const ad = searchParams.get("adminName");
