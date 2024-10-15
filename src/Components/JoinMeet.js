@@ -77,10 +77,9 @@ function JoinMeet() {
     const ad = searchParams.get("adminName");
     const mId = searchParams.get("meetingId");
     setAdminName(ad);
-    setAdminCon(ad);
     setMeetingId(mId);
     if (adminName && meetingId) {
-      const content = { adminName, meetingId };
+      const content = { adminName:adminCon, meetingId };
       fetch(`https://facesyncbackend.onrender.com/seeMeet`, {
         method: "POST",
         credentials: "include",
@@ -101,7 +100,7 @@ function JoinMeet() {
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,setAdminCon,adminName,meetingId]);
+  }, [searchParams,adminName,meetingId,adminCon]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
@@ -389,7 +388,7 @@ return () => {
   const handleMore = useCallback(async () => {
     setShowSetting(true);
     setSetting(false);
-  }, []);
+  }, [setSetting]);
 
   // JSX Code
 
@@ -399,7 +398,7 @@ return () => {
         <Connecting  onContinue={handleContinue} />
       ):
         (<div className="w-svw h-svh bg-blm  flex justify-center items-center">
-          <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          <div className="bg-transparent ring-2 ring-black rounded-lg h-full md:px-20 md:py-10  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
               muted
