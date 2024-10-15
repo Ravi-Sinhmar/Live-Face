@@ -5,14 +5,13 @@ import { useNavigate } from 'react-router-dom';
 
 import { useFriend } from "./../Contexts/Friend";
 import { usePeer } from "./../Contexts/Peer";
+import UserInput from "./UserInput";
 
 function JoinMeet() {
   const navigate = useNavigate();
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
   const [adminName, setAdminName] = useState(null);
-  const [userName, setUserName] = useState(null);
-  const [fullName, setFullName] = useState(null);
   const [meetingId, setMeetingId] = useState(null);
   const [handShake, setHandShake] = useState(true);
   const [needWebSocket, setNeedWebSocket] = useState(false);
@@ -20,7 +19,6 @@ function JoinMeet() {
   const [finalOffer, setFinalOffer] = useState(null);
   const [admin, setAdmin] = useState(false);
   const [user, setUser] = useState(false);
-  const [joined, setJoined] = useState(false);
   const [adminSocket, setAdminSocket] = useState(null);
   const [userSocket, setUserSocket] = useState(null);
   const [adminSocketStatus, setAdminSocketStatus] = useState(false);
@@ -29,10 +27,10 @@ function JoinMeet() {
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
-  const [live, setLive] = useState(false);
+ 
  
   // contexts
-  const {adminCon, setAdminCon } = useFriend();
+  const {adminCon, setAdminCon,userName,fullName,live,joined } = useFriend();
   const {
     peer,
     createOffer,
@@ -43,12 +41,7 @@ function JoinMeet() {
     disconnect
   } = usePeer();
 
-  const handleInputChange = (event) => {
-    let uName = event.target.value;
-    setFullName(uName);
-    uName = uName.toLowerCase().replace(/\s+/g, "");
-    setUserName(uName);
-  };
+ 
 
 
   const seeMeet = useCallback(() => {
@@ -325,21 +318,9 @@ return () => {
 
   return (
     <div>
-{user && !live ? (<React.Fragment> <input
- value={userName}
- onChange={handleInputChange}
-               
-                placeholder="Your name please"
-                className="border border-blt rounded-md py-2 bg-blm"
-                type="text"
-              />
-              <button onClick={()=>{
-                setJoined(true);
-                setLive(true);
-              }}>JOIN</button>
-            </React.Fragment>
+{user && !live ? ( <UserInput />
           ) : null}
-      {live ? (
+      {admin ? (
         <div className="w-svw h-svh bg-blm  flex justify-center items-center ">
 
           <div className="bg-blf h-full sm:w-1/2 md:w-1/4   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
