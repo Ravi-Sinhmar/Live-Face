@@ -450,7 +450,7 @@ return () => {
                   </svg>
                   Stop
                 </button>
-                {user ? <button className="z-20 w-fit px-6 text-sm font-[400] flex text-center items-center justify-center py-2 rounded-full bg-blm ring-1 ring-blt shadow-md shadow-blt h-fit" onClick={!joined && !admin ? handleUserJoin : cutCall}>{!joined ? "Join" : "Disconnect"}</button> : null } 
+                {user || admin ? <button className="z-20 w-fit px-6 text-sm font-[400] flex text-center items-center justify-center py-2 rounded-full bg-blm ring-1 ring-blt shadow-md shadow-blt h-fit" onClick={!joined && !admin ? handleUserJoin : cutCall}>{!joined ? "Join" : "Disconnect"}</button> : null } 
                 <button
                   onClick={toggleRemoteAudio}
                   className="flex flex-col text-sm items-center justify-center gap-1"
