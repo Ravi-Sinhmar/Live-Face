@@ -78,8 +78,8 @@ function JoinMeet() {
     const mId = searchParams.get("meetingId");
     setAdminName(ad);
     setMeetingId(mId);
-    if (adminName && meetingId) {
-      const content = { adminName:adminCon, meetingId };
+    if (adminCon && meetingId) {
+      const content = { adminName:adminCon, meetingId:meetingId };
       fetch(`https://facesyncbackend.onrender.com/seeMeet`, {
         method: "POST",
         credentials: "include",
@@ -100,7 +100,7 @@ function JoinMeet() {
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,adminName,meetingId,adminCon]);
+  }, [searchParams,meetingId,adminCon]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
