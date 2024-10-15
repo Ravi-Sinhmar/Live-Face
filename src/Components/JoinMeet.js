@@ -29,6 +29,8 @@ function JoinMeet() {
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
+  const [callStatus, setCallStatus] = useState("on");
+  
 
   // contexts
   const { adminCon, setAdminCon } = useFriend();
@@ -182,6 +184,17 @@ function JoinMeet() {
       };
       const adminMessageListener = async (event) => {
         const data = JSON.parse(event.data);
+
+        if(callStatus === "off"){
+          adminSocket.send(
+            JSON.stringify({ ...wsMessage, type: "off" })
+          );
+        };
+        
+        if(data.type === "off"){
+         disconnect();
+         navigate('/');
+        };
         // if Someone Reset or Refresh or Firsttime going on link
         if (data.type === "userOn" || data.type === "askingOffer") {
           const offer = await createOffer();
@@ -224,6 +237,18 @@ function JoinMeet() {
       const userMessageListener = async (event) => {
         const data = JSON.parse(event.data);
         // If admin Reset or refresh
+if(callStatus === "off"){
+  userSocket.send(
+    JSON.stringify({ ...wsMessage, type: "off" })
+  );
+};
+
+if(data.type === "off"){
+ disconnect();
+ navigate('/');
+};
+
+
         if (data.type === "adminOn") {
           userSocket.send(
             JSON.stringify({ ...wsMessage, type: "askingOffer" })
@@ -268,7 +293,7 @@ function JoinMeet() {
     fullName,
     createAnswer,
     createOffer,
-    setRemoteAnswer,
+    setRemoteAnswer,callStatus,disconnect,navigate
   ]);
 
   const handleNeg = useCallback(async () => {
@@ -324,9 +349,12 @@ function JoinMeet() {
     }
   };
 
-  const cutCall = () => {
-    disconnect();
+  const cutCall = async() => {
+   setCallStatus("off");
+   setTimeout(() => {
+   disconnect();
     navigate("/");
+   }, 2000);
   };
 
   const handleMore = useCallback(async () => {
@@ -341,8 +369,8 @@ function JoinMeet() {
         {!joined && !admin ? (
           <div className="bg-blm h-full w-full sm:w-1/2 md:w-1/4  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
           <div className="flex flex-col w-full h-full px-2 justify-center items-center gap-3">
-          <div className="flex flex-col gap-1 justify-center items-start">
-          <label className="text-sm">Your name</label>
+          <div className="flex flex-col gap-1 justify-center">
+          <label className="text-sm text-start">Your name</label>
             <input
               value={fullName}
               onChange={handleInputChange}
@@ -364,7 +392,7 @@ function JoinMeet() {
         ) : null}
 
         {admin || joined ? (
-          <div className="bg-blf h-full sm:w-1/2 md:w-1/4   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          <div className="bg-blb h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
               muted
@@ -377,7 +405,7 @@ function JoinMeet() {
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
-                className="w-full h-full ring-2 ring-black bg-blm rounded-md  object-cover  "
+                className="w-full h-full  ring-2 ring-black bg-blm rounded-md  object-cover  "
               ></video>
             </div>
             <div className="w-full bg-transparent  py-2 flex items-center justify-center">
