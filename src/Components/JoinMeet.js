@@ -199,8 +199,7 @@ if(adminSocketStatus){
     };
     
     if(data.type === "off"){
-     disconnect();
-     navigate('/');
+     finalDisconnect();
     };
     // if Someone Reset or Refresh or Firsttime going on link
  if (data.type === "userOn" || data.type === "askingOffer") {
@@ -247,8 +246,7 @@ if(userSocketStatus && joined){
     };
     
     if(data.type === "off"){
-     disconnect();
-     navigate('/');
+    finalDisconnect();
     };
 
     if (data.type === "adminOn") {
@@ -330,15 +328,21 @@ return () => {
     }
   };
 
+  const finalDisconnect = useCallback(() => {
+     disconnect();
+      // Remove the media stream from the video element
+      videoElement.srcObject = null;
+      // Release the media stream tracks
+      const tracks = videoElement.srcObject.getTracks();
+      tracks.forEach(track => track.stop());
+      navigate("/");
+  }, []);
 
-
-  const cutCall = async() => {
-    setCallStatus("off");
-    setTimeout(() => {
+  const cutCall = ()=>{
     disconnect();
-     navigate("/");
-    }, 2000);
-   };
+    callStatus("off");
+  }
+ 
 
   const handleMore = useCallback(async()=>{
    console.log("Click on More")
