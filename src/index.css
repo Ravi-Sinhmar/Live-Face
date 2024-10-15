@@ -575,6 +575,10 @@ video {
   z-index: 10;
 }
 
+.z-20{
+  z-index: 20;
+}
+
 .mt-6{
   margin-top: 1.5rem;
 }
@@ -820,6 +824,11 @@ video {
   padding-bottom: 1.25rem;
 }
 
+.px-4{
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 .pb-10{
   padding-bottom: 2.5rem;
 }
@@ -932,6 +941,11 @@ video {
 .ring-gray-500{
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(107 114 128 / var(--tw-ring-opacity));
+}
+
+.ring-blt{
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(68 71 82 / var(--tw-ring-opacity));
 }
 
 @media (min-width: 768px){
