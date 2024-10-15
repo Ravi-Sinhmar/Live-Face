@@ -5,13 +5,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { useFriend } from "./../Contexts/Friend";
 import { usePeer } from "./../Contexts/Peer";
-import UserInput from "./UserInput";
 
 function JoinMeet() {
   const navigate = useNavigate();
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
   const [adminName, setAdminName] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const [fullName, setFullName] = useState(null);
   const [meetingId, setMeetingId] = useState(null);
   const [handShake, setHandShake] = useState(true);
   const [needWebSocket, setNeedWebSocket] = useState(false);
@@ -19,6 +20,7 @@ function JoinMeet() {
   const [finalOffer, setFinalOffer] = useState(null);
   const [admin, setAdmin] = useState(false);
   const [user, setUser] = useState(false);
+  const [joined, setJoined] = useState(false);
   const [adminSocket, setAdminSocket] = useState(null);
   const [userSocket, setUserSocket] = useState(null);
   const [adminSocketStatus, setAdminSocketStatus] = useState(false);
@@ -28,9 +30,8 @@ function JoinMeet() {
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
  
- 
   // contexts
-  const {adminCon, setAdminCon,userName,fullName,live,joined } = useFriend();
+  const {adminCon, setAdminCon } = useFriend();
   const {
     peer,
     createOffer,
@@ -41,7 +42,12 @@ function JoinMeet() {
     disconnect
   } = usePeer();
 
- 
+  const handleInputChange = (event) => {
+    let uName = event.target.value;
+    setFullName(uName);
+    uName = uName.toLowerCase().replace(/\s+/g, "");
+    setUserName(uName);
+  };
 
 
   const seeMeet = useCallback(() => {
@@ -150,12 +156,14 @@ const startAdminSocket = useCallback(() => {
       // Set the video source to the `videoRef`
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = video;
+      
+        
+
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
     }
   }, []);
-
   useEffect(() => {
     getMyVideo();
   }, [getMyVideo]);
@@ -316,11 +324,20 @@ return () => {
 
   return (
     <div>
-{user && !live ? ( <UserInput />
+{true ? (<React.Fragment> <input
+ value={userName}
+ onChange={handleInputChange}
+               
+                placeholder="Your name please"
+                className="border border-blt rounded-md py-2 bg-blm"
+                type="text"
+              />
+              <button onClick={()=>{setJoined(true)}}>JOIN</button>
+            </React.Fragment>
           ) : null}
-      {admin || user ? (
-        <div className="w-svw h-svh bg-blm  flex justify-center items-center ">
 
+      {true ? (
+        <div className="w-svw h-svh bg-blm  flex justify-center items-center ">
           <div className="bg-blf h-full sm:w-1/2 md:w-1/4   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
