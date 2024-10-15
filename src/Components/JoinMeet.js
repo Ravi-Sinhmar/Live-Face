@@ -247,9 +247,9 @@ if(adminSocketStatus){
   await setRemoteAnswer(data.content);
 };
       };
-
-
-  adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
+      if(setting){
+        adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
+      }
    // Listening for messages 
    adminSocket.addEventListener("message", adminMessageListener);
   return () => {
@@ -289,19 +289,20 @@ if(userSocketStatus && joined){
        };
 
          // If neg need
-     if (data.type === "negNeed") {
+      if (data.type === "negNeed") {
       const answer = await createAnswer(data.content)
       userSocket.send(JSON.stringify({ ...wsMessage,type:"negAnswer", content: answer}));
        };
             };
-
+if(!joined || setting){
   userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
+}
   userSocket.addEventListener("message", userMessageListener);
 return () => {
   userSocket.removeEventListener("message", userMessageListener);
 };
 }
-  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer,setRemoteAnswer,disconnect,callStatus,navigate]);
+  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer,setRemoteAnswer,disconnect,callStatus,navigate,setting]);
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
