@@ -180,6 +180,23 @@ const startAdminSocket = useCallback(() => {
     getRemoteVideo();
   },[getRemoteVideo]);
 
+
+
+  const finalDisconnect = useCallback(() => {
+    disconnect();
+     // Remove the media stream from the video element
+     localVideoRef.current.srcObject = null;
+     // Release the media stream tracks
+     const tracks = localVideoRef.current.srcObject.getTracks();
+     tracks.forEach(track => track.stop());
+     navigate("/");
+ }, [disconnect,navigate]);
+
+ const cutCall = ()=>{
+   setCallStatus("off");
+    finalDisconnect();
+ };
+
   useEffect(()=>{
 if(adminSocketStatus){
   const wsMessage = {
@@ -272,7 +289,7 @@ return () => {
   userSocket.removeEventListener("message", userMessageListener);
 };
 }
-  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer.setRemoteAnswer,callStatus]);
+  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer.setRemoteAnswer,callStatus,finalDisconnect,createOffer,setRemoteAnswer]);
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
@@ -328,20 +345,7 @@ return () => {
     }
   };
 
-  const finalDisconnect = useCallback(() => {
-     disconnect();
-      // Remove the media stream from the video element
-      localVideoRef.current.srcObject = null;
-      // Release the media stream tracks
-      const tracks = localVideoRef.current.srcObject.getTracks();
-      tracks.forEach(track => track.stop());
-      navigate("/");
-  }, []);
 
-  const cutCall = ()=>{
-    setCallStatus("off");
-     finalDisconnect();
-  };
  
 
   const handleMore = useCallback(async()=>{
