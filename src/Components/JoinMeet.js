@@ -339,9 +339,9 @@ return () => {
   }, []);
 
   const cutCall = ()=>{
-    disconnect();
-    callStatus("off");
-  }
+    setCallStatus("off");
+     finalDisconnect();
+  };
  
 
   const handleMore = useCallback(async()=>{
