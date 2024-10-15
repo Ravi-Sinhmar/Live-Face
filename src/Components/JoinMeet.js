@@ -387,7 +387,8 @@ return () => {
   }, [callStatus2, myVideo]);
 
   const handleMore = useCallback(async () => {
-    console.log("Click on More");
+    setShowSetting(true);
+    setSetting(false);
   }, []);
 
   // JSX Code
