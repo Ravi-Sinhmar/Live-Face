@@ -7,7 +7,7 @@ function Setting({localVideoRef,onContinue}) {
     const audioOutputEl =useRef(null);
     const videoInputEl =useRef(null);
     const [isLoading,setIsLoading] = useState(false);
-    const {setCons,} = useFriend();
+    const {setCons,setAudioOutput} = useFriend();
     const getStream = useCallback(async () => {
         try{
           const permission =  await navigator.mediaDevices.getUserMedia({video:true,audio:true});
@@ -29,6 +29,7 @@ function Setting({localVideoRef,onContinue}) {
                     setIsLoading(false);
                  }
                 setCons({video:true,audio:true});
+                console.log(devices);
                 devices.forEach(d=>{
                     const option = document.createElement('option') //create the option tag
                     option.value = d.deviceId
@@ -63,6 +64,7 @@ function Setting({localVideoRef,onContinue}) {
     }
     const changeAudioOutput = async(e)=>{
         alert(localVideoRef);
+        console.log(e.target.value);
       await localVideoRef.current.setSinkId(e.target.value);
         console.log("Changed audio device!")
     }
