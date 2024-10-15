@@ -150,14 +150,12 @@ const startAdminSocket = useCallback(() => {
       // Set the video source to the `videoRef`
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = video;
-      
-        
-
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
     }
   }, []);
+
   useEffect(() => {
     getMyVideo();
   }, [getMyVideo]);

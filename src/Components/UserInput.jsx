@@ -1,6 +1,5 @@
 import React from "react";
 import { useFriend } from "./../Contexts/Friend";
-
 function UserInput() {
 
    // contexts
