@@ -20,7 +20,7 @@ const startMeet = useCallback(()=>{
 
 const handleInputChange = (event) => {
   setAdminName(event.target.value);
-  setAdminCon(event.target.value);
+  setAdminCon(event.target.value.toLowerCase().replace(/\s+/g, ""));
 };
 
 const saveMeet = useCallback(()=>{

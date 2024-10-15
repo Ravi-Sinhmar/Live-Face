@@ -50,6 +50,27 @@ function JoinMeet() {
     // Proceed with using cons
   };
 
+
+
+const getUserData = () => {
+  const id = localStorage.getItem('userId');
+  const name = localStorage.getItem('userName');
+  return { id, name };
+};
+
+const storeUserData = (id, name) => {
+  localStorage.setItem('userId', id);
+  localStorage.setItem('userName', name);
+};
+
+const removeUserData = () => {
+  localStorage.removeItem('userId');
+  localStorage.removeItem('userName');
+};
+
+
+
+
   const handleUserJoin = useCallback(() => {
     let tries = 0;  // Initialize your tries counter here
     console.log(tries)
@@ -78,7 +99,13 @@ function JoinMeet() {
     const mId = searchParams.get("meetingId");
     setAdminName(ad);
     setMeetingId(mId);
+    const {id ,name} = getUserData();
+    if(id === mId){
+      setAdminCon(name);
+    };
     if (adminCon && meetingId) {
+      
+
       const content = { adminName:adminCon, meetingId:meetingId };
       fetch(`https://facesyncbackend.onrender.com/seeMeet`, {
         method: "POST",
@@ -94,6 +121,11 @@ function JoinMeet() {
             setNeedWebSocket(true);
             setAdmin(data.token);
             setUser(!data.token);
+
+if(data.token){
+  storeUserData(meetingId,adminCon);
+};
+
           }
           if (data.status === "fail") {
           }
@@ -227,13 +259,14 @@ if(adminSocketStatus){
     if(callStatus === "off"){
   adminSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
   adminSocket.close();
+  removeUserData();
   navigate("/");
     };
     if(data.type === "off"){
       disconnect();
       setCallStatus2(false);
   adminSocket.close();
-
+  removeUserData();
       navigate("/");
     }
 
@@ -277,11 +310,14 @@ if(userSocketStatus && joined){
     if(callStatus === "off"){
       userSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
       userSocket.close();
+      removeUserData();
+
       navigate("/");
         };
         if(data.type === "off"){
           disconnect();
           userSocket.close();
+          removeUserData();
           navigate("/");
         }
     // If admin Reset or refresh
@@ -370,7 +406,8 @@ return () => {
    setCallStatus2(false);
    setTimeout(() => {
    disconnect();
-    navigate("/");
+   removeUserData();
+   navigate("/");
    }, 1000);
   };
 
