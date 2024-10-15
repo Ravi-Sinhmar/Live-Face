@@ -48,6 +48,7 @@ function JoinMeet() {
 if(user){
 setFullName("DummyNameOfUser");
 setUserName("dummynameOfuser");
+setJoined(true);
 }
   },[user]);
 
@@ -362,9 +363,9 @@ return () => {
 
   return (
     <div>
-      <div className="w-svw h-svh bg-blm  flex justify-center items-center">
+      <div className="w-svw h-svh bg-blm md:w-1/3 lg:h-1/4 flex justify-center items-center">
         {admin || user ?  (
-          <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          <div className="bg-transparent ring-2 rounded-lg h-full  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
               muted
