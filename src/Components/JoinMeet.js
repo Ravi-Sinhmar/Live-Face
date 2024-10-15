@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { useFriend } from "./../Contexts/Friend";
 import { usePeer } from "./../Contexts/Peer";
 import { useNavigate } from "react-router-dom";
+import Connecting from "./Connecting";
 
 function JoinMeet() {
   const navigate = useNavigate();
@@ -29,10 +30,11 @@ function JoinMeet() {
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
   const [callStatus, setCallStatus] = useState("on");
+  const [showSetting, setShowSetting] = useState(true);
+
   
- 
   // contexts
-  const {adminCon, setAdminCon } = useFriend();
+  const {adminCon, setAdminCon,cons} = useFriend();
   const {
     peer,
     createOffer,
@@ -41,6 +43,12 @@ function JoinMeet() {
     sendVideo,
     remoteStream,disconnect
   } = usePeer();
+
+  const handleContinue = () => {
+    setShowSetting(false);
+    console.log("Constraints:", cons);
+    // Proceed with using cons
+  };
 
   const handleUserJoin = useCallback(() => {
     let tries = 0;  // Initialize your tries counter here
@@ -158,11 +166,7 @@ const startAdminSocket = useCallback(() => {
 
   const getMyVideo = useCallback(async () => {
     try {
-      const video = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-  
+      const video = await navigator.mediaDevices.getUserMedia(cons);
       setMyVideo(video);
       console.log('Video tracks:', video.getVideoTracks());
       console.log('Audio tracks:', video.getAudioTracks());
@@ -170,19 +174,14 @@ const startAdminSocket = useCallback(() => {
       // Set the video source to the `videoRef`
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = video;
-      
-        
-
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
     }
-  }, []);
+  }, [cons]);
   useEffect(() => {
     getMyVideo();
   }, [getMyVideo]);
-
-
   const getRemoteVideo = useCallback(()=>{
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
@@ -306,10 +305,10 @@ return () => {
   }, [handleNeg, peer]);
 
  useEffect(() => {
-    if (handShake) {
+    if (!showSetting) {
       sendVideo(myVideo);
     }
-  }, [handShake, sendVideo, myVideo]);
+  }, [showSetting, sendVideo, myVideo]);
 
 
 
@@ -354,7 +353,10 @@ return () => {
 
   return (
     <React.Fragment>
-        <div className="w-svw h-svh bg-blm  flex justify-center items-center">
+     {showSetting ? (
+        <Connecting onContinue={handleContinue} />
+      ):
+        (<div className="w-svw h-svh bg-blm  flex justify-center items-center">
           <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
@@ -495,9 +497,7 @@ return () => {
               </div>
             </div>
           </div>
-          </div>
-          
-
+          </div>)}
     </React.Fragment>
   );
 }
