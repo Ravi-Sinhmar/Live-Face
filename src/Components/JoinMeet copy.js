@@ -70,17 +70,17 @@ function JoinMeet() {
 const startAdminSocket = useCallback(() => {
       if (needWebSocket && admin) {
         const newSocket = new WebSocket(
-          `wss://localhost:5000/?userName=${adminName}${meetingId}&name=${adminName}`
+          `wss://localhost:5000/?userName=${meetingId}__.ad`
         );
         setAdminSocket(newSocket);
       }
-  }, [needWebSocket, admin, adminName, meetingId]);
+  }, [needWebSocket, admin, meetingId]);
 
   const startUserSocket = useCallback(() => {
     if (needWebSocket && user) {
         const cleanName = userName.toLowerCase().replace(/\s+/g, "");
         const newSocket = new WebSocket(
-          `wss://localhost:5000/?userName=${cleanName}${meetingId}&name=${userName}`
+          `wss://localhost:5000/?userName=${meetingId}__.us`
         );
         setUserSocket(newSocket);
     }
