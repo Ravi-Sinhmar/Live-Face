@@ -331,9 +331,9 @@ return () => {
   const finalDisconnect = useCallback(() => {
      disconnect();
       // Remove the media stream from the video element
-      localVideoRef.srcObject = null;
+      localVideoRef.current.srcObject = null;
       // Release the media stream tracks
-      const tracks = localVideoRef.srcObject.getTracks();
+      const tracks = localVideoRef.current.srcObject.getTracks();
       tracks.forEach(track => track.stop());
       navigate("/");
   }, []);
