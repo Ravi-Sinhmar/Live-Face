@@ -11,8 +11,8 @@ function JoinMeet() {
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
   const [adminName, setAdminName] = useState(null);
-  const [userName, setUserName] = useState(null);
-  const [fullName, setFullName] = useState(null);
+  const [userName, setUserName] = useState("dummy");
+  const [fullName, setFullName] = useState("Dummy");
   const [meetingId, setMeetingId] = useState(null);
   const [handShake, setHandShake] = useState(true);
   const [needWebSocket, setNeedWebSocket] = useState(false);
@@ -43,12 +43,12 @@ function JoinMeet() {
     disconnect
   } = usePeer();
 
-  const handleInputChange = (event) => {
-    let uName = event.target.value;
-    setFullName(uName);
-    uName = uName.toLowerCase().replace(/\s+/g, "");
-    setUserName(uName);
-  };
+  // const handleInputChange = (event) => {
+  //   let uName = event.target.value;
+  //   setFullName(uName);
+  //   uName = uName.toLowerCase().replace(/\s+/g, "");
+  //   setUserName(uName);
+  // };
 
 
   const seeMeet = useCallback(() => {
@@ -361,13 +361,14 @@ return () => {
 
   return (
     <div>
-{true ? (<React.Fragment> <input
+{true ? (<React.Fragment> 
+  {/* <input
  value={fullName}
  onChange={handleInputChange}
                 placeholder="Your name please"
                 className="border border-blt rounded-md py-2 bg-blm"
                 type="text"
-              />
+              /> */}
               <button onClick={()=>{setJoined(true)}}>JOIN</button>
             </React.Fragment>
           ) : null}
