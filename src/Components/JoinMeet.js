@@ -31,7 +31,6 @@ function JoinMeet() {
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
   const [callStatus, setCallStatus] = useState("on");
   const [showSetting, setShowSetting] = useState(true);
-  const [trackss, setTrackss] = useState(false);
 
   
   // contexts
@@ -72,14 +71,7 @@ function JoinMeet() {
     loopWithDelay();  // Start the loop
   }, []);
 
-
-  useEffect(() => {
-    if (setting) {
-      handleUserJoin();  
-      handleUserJoin();
-      handleUserJoin();
-    }
-  }, [setting, handleUserJoin]);
+  
 
 
   const seeMeet = useCallback(() => {
@@ -88,7 +80,7 @@ function JoinMeet() {
     setAdminName(ad);
     setAdminCon(ad);
     setMeetingId(mId);
-    if (adminName && meetingId && setting) {
+    if (adminName && meetingId) {
       const content = { adminName, meetingId };
       fetch(`https://facesyncbackend.onrender.com/seeMeet`, {
         method: "POST",
@@ -110,30 +102,30 @@ function JoinMeet() {
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,setAdminCon,adminName,meetingId,setting]);
+  }, [searchParams,setAdminCon,adminName,meetingId]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
 
 
 const startAdminSocket = useCallback(() => {
-      if (needWebSocket && admin && setting) {
+      if (needWebSocket && admin) {
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.ad`
         );
         setAdminSocket(newSocket);
       }
-  }, [needWebSocket, admin, meetingId,setting]);
+  }, [needWebSocket, admin, meetingId]);
 
   const startUserSocket = useCallback(() => {
-    if (needWebSocket && user && joined && setting) {
+    if (needWebSocket && user && joined) {
         const cleanName = userName.toLowerCase().replace(/\s+/g, "");
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.us`
         );
         setUserSocket(newSocket);
     }
-  }, [needWebSocket, meetingId, userName, user,joined,setting]);
+  }, [needWebSocket, meetingId, userName, user,joined]);
 
   useEffect(() => {
     startUserSocket();
@@ -175,31 +167,42 @@ const startAdminSocket = useCallback(() => {
 
 
   const getMyVideo = useCallback(async () => {
-   if(setting){
+   
     try {
       const video = await navigator.mediaDevices.getUserMedia(cons);
       setMyVideo(video);
       console.log('Video tracks:', video.getVideoTracks());
       console.log('Audio tracks:', video.getAudioTracks());
-      setTrackss(true);
   
       // Set the video source to the `videoRef`
-      if (localVideoRef.current && myVideo) {
+      if (localVideoRef.current) {
         if(audioOutput !== ""){
           await localVideoRef.current.setSinkId(audioOutput);
         }
-        localVideoRef.current.srcObject = myVideo;
+        localVideoRef.current.srcObject = video;
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
     }
-   }
-  }, [cons,audioOutput,setting,myVideo]);
+  }, [cons,audioOutput]);
+
+
   useEffect(() => {
-    if(setting && trackss){
+    if(setting){
       getMyVideo();
     }
-  }, [getMyVideo,setting,trackss]);
+  }, [getMyVideo,setting]);
+
+
+// To reset the video stream when constraints change
+useEffect(() => {
+  if (myVideo && localVideoRef.current) {
+    localVideoRef.current.srcObject = myVideo;
+  }
+}, [myVideo, cons]);
+
+
+
   const getRemoteVideo = useCallback(()=>{
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
