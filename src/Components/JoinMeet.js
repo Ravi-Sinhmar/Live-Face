@@ -51,6 +51,7 @@ function JoinMeet() {
   
         await delay(500);  // Wait for 500ms
       }
+      setJoined(true);
     };
   
     loopWithDelay();  // Start the loop
