@@ -23,6 +23,7 @@ function JoinMeet() {
   const [adminSocketStatus, setAdminSocketStatus] = useState(false);
   const [userSocketStatus, setUserSocketStatus] = useState(false);
   const [myVideo, setMyVideo] = useState(null);
+  
  
   // contexts
   const {adminCon, setAdminCon } = useFriend();
@@ -35,13 +36,27 @@ function JoinMeet() {
     remoteStream,
   } = usePeer();
 
-  const handleInputChange = (event) => {
-    let uName = event.target.value;
-    setFullName(uName);
-    uName = uName.toLowerCase().replace(/\s+/g, "");
-    setUserName(uName);
-  };
+  const handleUserJoin = useCallback(() => {
+    let tries = 0;  // Initialize your tries counter here
+    console.log(tries)
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  
+    const loopWithDelay = async () => {
+      while (tries < 4) {
+        let uName = "A";
+        setFullName(uName);
+        uName = uName.toLowerCase().replace(/\s+/g, "");
+        setUserName(uName);
+        tries++;  // Increment tries
+  
+        await delay(500);  // Wait for 500ms
+      }
+    };
+  
+    loopWithDelay();  // Start the loop
+  }, []);
 
+  
 
   const seeMeet = useCallback(() => {
     const ad = searchParams.get("adminName");
@@ -274,34 +289,15 @@ return () => {
 
   return (
     <React.Fragment>
-      {true ? (
-
-
-
+      <button onClick={handleUserJoin}>Join</button>
         <div className="bg-blf w-screen h-screen flex flex-col justify-between overflow-hidden">
           <video ref={localVideoRef} muted autoPlay playsInline className="absolute right-2 top-2 rounded-md object-cover h-24 w-16"></video>
         <div className="flex flex-col justify-center items-center h-full">
         <video ref={remoteVideoRef} muted autoPlay playsInline className="rounded-md object-cover h-full "></video>
-      
-          
         </div>
         <div className="flex justify-between items-center px-10 py-4 bg-blm rounded-lg">
-    
-        {user  && !joined ? (<React.Fragment> <input
-                value={userName}
-                onChange={handleInputChange}
-
-                placeholder="Your name please"
-                className="border border-blt rounded-md py-2 bg-blm"
-                type="text"
-              />
-              <button onClick={()=>{setJoined(true)}} >JOIN</button>
-            </React.Fragment>
-          ) : null}
         </div>
         </div>
-      ) : null}
-      
     </React.Fragment>
   );
 }
