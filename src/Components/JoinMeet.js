@@ -132,7 +132,7 @@ if(data.token){
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,meetingId,adminCon]);
+  }, [searchParams,meetingId,adminCon,setAdminCon]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
@@ -435,7 +435,7 @@ return () => {
         <Connecting  onContinue={handleContinue} />
       ):
         (<div className="w-svw h-svh bg-blm  flex justify-center items-center">
-          <div className="bg-transparent ring-2 ring-black rounded-lg h-full md:px-20 md:py-10  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          <div className="bg-transparent ring-2 ring-black rounded-lg h-full w-full md:w-1/2 md:aspect-square  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
               muted
