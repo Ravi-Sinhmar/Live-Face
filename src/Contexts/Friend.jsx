@@ -17,7 +17,6 @@ function FriendProvider(props){
         </MyContext.Provider>
     )
 }
-
 export default FriendProvider;
 
 
