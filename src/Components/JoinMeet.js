@@ -34,7 +34,7 @@ function JoinMeet() {
 
   
   // contexts
-  const {adminCon, setAdminCon,cons} = useFriend();
+  const {adminCon, setAdminCon,cons,audioOutput,setting,setSetting} = useFriend();
   const {
     peer,
     createOffer,
@@ -45,6 +45,7 @@ function JoinMeet() {
   } = usePeer();
 
   const handleContinue = () => {
+    setSetting(true);
     setShowSetting(false);
     console.log("Constraints:", cons);
     // Proceed with using cons
@@ -78,7 +79,7 @@ function JoinMeet() {
     setAdminName(ad);
     setAdminCon(ad);
     setMeetingId(mId);
-    if (adminName && meetingId) {
+    if (adminName && meetingId && setting) {
       const content = { adminName, meetingId };
       fetch(`https://facesyncbackend.onrender.com/seeMeet`, {
         method: "POST",
@@ -100,7 +101,7 @@ function JoinMeet() {
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,setAdminCon,adminName,meetingId]);
+  }, [searchParams,setAdminCon,adminName,meetingId,setting]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
@@ -165,6 +166,7 @@ const startAdminSocket = useCallback(() => {
 
 
   const getMyVideo = useCallback(async () => {
+   if(setting){
     try {
       const video = await navigator.mediaDevices.getUserMedia(cons);
       setMyVideo(video);
@@ -173,12 +175,16 @@ const startAdminSocket = useCallback(() => {
   
       // Set the video source to the `videoRef`
       if (localVideoRef.current) {
+        if(audioOutput !== ""){
+          await localVideoRef.current.setSinkId(audioOutput);
+        }
         localVideoRef.current.srcObject = video;
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
     }
-  }, [cons]);
+   }
+  }, [cons,audioOutput,setting]);
   useEffect(() => {
     getMyVideo();
   }, [getMyVideo]);
@@ -354,7 +360,7 @@ return () => {
   return (
     <React.Fragment>
      {showSetting ? (
-        <Connecting localVideoRef={localVideoRef}  onContinue={handleContinue} />
+        <Connecting  onContinue={handleContinue} />
       ):
         (<div className="w-svw h-svh bg-blm  flex justify-center items-center">
           <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">

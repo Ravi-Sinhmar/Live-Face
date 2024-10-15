@@ -1,13 +1,13 @@
 import React , {useCallback, useEffect, useRef, useState} from "react";
-import { useFriend , FriendProvider } from "./../Contexts/Friend";
+import { useFriend } from "./../Contexts/Friend";
 import Loader from "./Loader";
 
-function Setting({localVideoRef,onContinue}) {
+function Setting({onContinue}) {
     const audioInputEl = useRef(null);
     const audioOutputEl =useRef(null);
     const videoInputEl =useRef(null);
     const [isLoading,setIsLoading] = useState(false);
-    const {setCons,setAudioOutput} = useFriend();
+    const {setCons,setAudioOutput,setSetting} = useFriend();
     const getStream = useCallback(async () => {
         try{
           const permission =  await navigator.mediaDevices.getUserMedia({video:true,audio:true});
@@ -63,9 +63,9 @@ function Setting({localVideoRef,onContinue}) {
 
     }
     const changeAudioOutput = async(e)=>{
-        alert(localVideoRef);
+       
         console.log(e.target.value);
-      await localVideoRef.current.setSinkId(e.target.value);
+      await  setAudioOutput(e.target.value)
         console.log("Changed audio device!")
     }
     
@@ -112,7 +112,6 @@ function Setting({localVideoRef,onContinue}) {
        <div className="flex flex-col gap-3 w-full justify-between ">
          <label className="text-blf font-[500]">Camera Type</label>
          <select onChange={changeVideo} ref={videoInputEl} className=" text-blt px-2  ring-1 ring-gray-500 bg-blg rounded-md w-full text-sm  py-3 "  id="audio-input">
-    
          </select>
        </div>
      
