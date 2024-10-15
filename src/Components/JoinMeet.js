@@ -354,7 +354,7 @@ return () => {
   return (
     <React.Fragment>
      {showSetting ? (
-        <Connecting onContinue={handleContinue} />
+        <Connecting localVideoRef={localVideoRef}  onContinue={handleContinue} />
       ):
         (<div className="w-svw h-svh bg-blm  flex justify-center items-center">
           <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
