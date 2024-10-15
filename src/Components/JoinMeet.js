@@ -392,7 +392,7 @@ if(data.type === "off"){
         ) : null}
 
         {admin || joined ? (
-          <div className="bg-blb h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
               muted
@@ -400,7 +400,7 @@ if(data.type === "off"){
               playsInline
               className="absolute right-3 top-3 rounded-md  object-cover h-24 w-16 ring-1 ring-black"
             ></video>
-            <div className="flex flex-col justify-center items-center h-full">
+            <div className=" flex flex-col justify-center items-center h-full">
               <video
                 ref={remoteVideoRef}
                 autoPlay
