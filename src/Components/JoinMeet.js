@@ -272,7 +272,7 @@ return () => {
   userSocket.removeEventListener("message", userMessageListener);
 };
 }
-  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer.setRemoteAnswer,callStatus,disconnect,navigate]);
+  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer.setRemoteAnswer,callStatus]);
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
@@ -331,9 +331,9 @@ return () => {
   const finalDisconnect = useCallback(() => {
      disconnect();
       // Remove the media stream from the video element
-      videoElement.srcObject = null;
+      localVideoRef.srcObject = null;
       // Release the media stream tracks
-      const tracks = videoElement.srcObject.getTracks();
+      const tracks = localVideoRef.srcObject.getTracks();
       tracks.forEach(track => track.stop());
       navigate("/");
   }, []);
