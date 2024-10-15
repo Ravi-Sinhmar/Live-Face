@@ -29,6 +29,7 @@ function JoinMeet() {
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
+  const [callStatus, setCallStatus] = useState("on");
  
   // contexts
   const {adminCon, setAdminCon } = useFriend();
@@ -190,6 +191,17 @@ if(adminSocketStatus){
   };
   const adminMessageListener =async (event)=>{
     const data = JSON.parse(event.data);
+
+    if(callStatus === "off"){
+      adminSocket.send(
+        JSON.stringify({ ...wsMessage, type: "off" })
+      );
+    };
+    
+    if(data.type === "off"){
+     disconnect();
+     navigate('/');
+    };
     // if Someone Reset or Refresh or Firsttime going on link
  if (data.type === "userOn" || data.type === "askingOffer") {
   const offer = await createOffer();
@@ -228,6 +240,17 @@ if(userSocketStatus && joined){
   const userMessageListener = async(event)=>{
     const data = JSON.parse(event.data);
     // If admin Reset or refresh
+    if(callStatus === "off"){
+      userSocket.send(
+        JSON.stringify({ ...wsMessage, type: "off" })
+      );
+    };
+    
+    if(data.type === "off"){
+     disconnect();
+     navigate('/');
+    };
+
     if (data.type === "adminOn") {
     userSocket.send(JSON.stringify({ ...wsMessage,type:"askingOffer"}));
      };
@@ -251,7 +274,7 @@ return () => {
   userSocket.removeEventListener("message", userMessageListener);
 };
 }
-  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer,setRemoteAnswer]);
+  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer.setRemoteAnswer,callStatus,disconnect,navigate]);
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
@@ -307,10 +330,15 @@ return () => {
     }
   };
 
-  const cutCall = ()=>{
+
+
+  const cutCall = async() => {
+    setCallStatus("off");
+    setTimeout(() => {
     disconnect();
-    navigate("/")
-  };
+     navigate("/");
+    }, 2000);
+   };
 
   const handleMore = useCallback(async()=>{
    console.log("Click on More")
@@ -327,7 +355,6 @@ return () => {
 {true ? (<React.Fragment> <input
  value={userName}
  onChange={handleInputChange}
-               
                 placeholder="Your name please"
                 className="border border-blt rounded-md py-2 bg-blm"
                 type="text"
