@@ -69,9 +69,17 @@ useEffect(()=>{
 
 },[peer,handleSendVideo]);
 
+   // close connection
+   const disconnect = useCallback(() => {
+    if (peer.connectionState !== "closed") {
+      peer.close();
+      setRemoteStream(null); // Optionally, reset other relevant state variables (setting, cons)
+  }
+}, [peer]);
+
 
   return (
-    <PeerContext.Provider value={{ peer , createOffer,createAnswer,setRemoteAnswer,sendVideo,remoteStream}}>
+    <PeerContext.Provider value={{ peer ,disconnect, createOffer,createAnswer,setRemoteAnswer,sendVideo,remoteStream}}>
       {props.children}
     </PeerContext.Provider>
   );
