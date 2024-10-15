@@ -424,6 +424,7 @@ return () => {
 
   const handleMore = useCallback(async () => {
     window.location.reload();
+    setJoined(false);
   }, []);
 
   // JSX Code
