@@ -184,17 +184,18 @@ const startAdminSocket = useCallback(() => {
 
   const finalDisconnect = useCallback(() => {
     disconnect();
+    navigate("/");
      // Remove the media stream from the video element
      localVideoRef.current.srcObject = null;
      // Release the media stream tracks
      const tracks = localVideoRef.current.srcObject.getTracks();
      tracks.forEach(track => track.stop());
-     navigate("/");
+     
  }, [disconnect,navigate]);
 
  const cutCall = ()=>{
    setCallStatus("off");
-    finalDisconnect();
+  finalDisconnect();
  };
 
   useEffect(()=>{
