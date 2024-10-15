@@ -29,6 +29,7 @@ function JoinMeet() {
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
+  const [live, setLive] = useState(false);
  
   // contexts
   const {adminCon, setAdminCon } = useFriend();
@@ -324,7 +325,7 @@ return () => {
 
   return (
     <div>
-{true ? (<React.Fragment> <input
+{user && !live ? (<React.Fragment> <input
  value={userName}
  onChange={handleInputChange}
                
@@ -332,12 +333,15 @@ return () => {
                 className="border border-blt rounded-md py-2 bg-blm"
                 type="text"
               />
-              <button onClick={()=>{setJoined(true)}}>JOIN</button>
+              <button onClick={()=>{
+                setJoined(true);
+                setLive(true);
+              }}>JOIN</button>
             </React.Fragment>
           ) : null}
-
-      {true ? (
+      {live ? (
         <div className="w-svw h-svh bg-blm  flex justify-center items-center ">
+
           <div className="bg-blf h-full sm:w-1/2 md:w-1/4   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
