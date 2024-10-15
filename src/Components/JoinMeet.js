@@ -30,6 +30,7 @@ function JoinMeet() {
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
   const [callStatus, setCallStatus] = useState("on");
+  const [fetching, setFetching] = useState(true);
  
   // contexts
   const {adminCon, setAdminCon } = useFriend();
@@ -70,6 +71,7 @@ function JoinMeet() {
         .then((data) => data.json())
         .then((data) => {
           if (data.status === "success") {
+            setFetching(false);
             setNeedWebSocket(true);
             setAdmin(data.token);
             setUser(!data.token);
@@ -361,20 +363,9 @@ return () => {
 
   return (
     <div>
-{true ? (<React.Fragment> <input
- value={userName}
- onChange={handleInputChange}
-                placeholder="Your name please"
-                className="border border-blt rounded-md py-2 bg-blm"
-                type="text"
-              />
-              <button onClick={()=>{setJoined(true)}}>JOIN</button>
-            </React.Fragment>
-          ) : null}
-
-      {true ? (
-        <div className="w-svw h-svh bg-blm  flex justify-center items-center ">
-          <div className="bg-blf h-full sm:w-1/2 md:w-1/4   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+      <div className="w-svw h-svh bg-blm  flex justify-center items-center">
+        {admin || joined || fetching ?  (
+          <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
               muted
@@ -382,17 +373,20 @@ return () => {
               playsInline
               className="absolute right-3 top-3 rounded-md  object-cover h-24 w-16 ring-1 ring-black"
             ></video>
-            <div className="flex flex-col justify-center items-center h-full">
+            <div className=" flex flex-col justify-center items-center h-full">
               <video
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
-                className="w-full h-full ring-2 ring-black bg-blm rounded-md  object-cover  "
+                className="w-full h-full  ring-2 ring-black bg-blm rounded-md  object-cover  "
               ></video>
             </div>
             <div className="w-full bg-transparent  py-2 flex items-center justify-center">
               <div className="flex justify-between w-full rounded-md ring-2 ring-black items-center px-4 py-2 bg-blm h-fit ">
-                <button  onClick={toggleMic} className="flex flex-col text-sm items-center justify-center gap-1">
+                <button
+                  onClick={toggleMic}
+                  className="flex flex-col text-sm items-center justify-center gap-1"
+                >
                   <svg
                     className="size-8 p-1 rounded-full"
                     viewBox="0 0 24 24"
@@ -446,14 +440,17 @@ return () => {
                   <p>Mute</p>
                 </button>
 
-                <button  onClick={toggleVideo} className="flex flex-col text-sm items-center justify-center gap-1">
+                <button
+                  onClick={toggleVideo}
+                  className="flex flex-col text-sm items-center justify-center gap-1"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                     className="size-8 p-1 rounded-full"
+                    className="size-8 p-1 rounded-full"
                   >
                     <path
                       stroke-linecap="round"
@@ -463,14 +460,28 @@ return () => {
                   </svg>
                   Stop
                 </button>
-                <button  onClick={cutCall} className="flex flex-col text-sm items-center justify-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"  className="size-8 p-1 bg-ble text-blm rounded-full">
-  <path fill-rule="evenodd" d="M15.22 3.22a.75.75 0 0 1 1.06 0L18 4.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L19.06 6l1.72 1.72a.75.75 0 0 1-1.06 1.06L18 7.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L16.94 6l-1.72-1.72a.75.75 0 0 1 0-1.06ZM1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z" clip-rule="evenodd" />
-</svg>
-
+                <button
+                  onClick={cutCall}
+                  className="flex flex-col text-sm items-center justify-center gap-1"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="size-8 p-1 bg-ble text-blm rounded-full"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M15.22 3.22a.75.75 0 0 1 1.06 0L18 4.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L19.06 6l1.72 1.72a.75.75 0 0 1-1.06 1.06L18 7.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L16.94 6l-1.72-1.72a.75.75 0 0 1 0-1.06ZM1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
                   Disconnect
                 </button>
-                <button  onClick={toggleRemoteAudio}  className="flex flex-col text-sm items-center justify-center gap-1">
+                <button
+                  onClick={toggleRemoteAudio}
+                  className="flex flex-col text-sm items-center justify-center gap-1"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -488,7 +499,10 @@ return () => {
                   Silence
                 </button>
 
-                <button onClick={handleMore} className="flex flex-col text-sm items-center justify-center gap-1">
+                <button
+                  onClick={handleMore}
+                  className="flex flex-col text-sm items-center justify-center gap-1"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -505,14 +519,34 @@ return () => {
                   </svg>
                   More
                 </button>
-                
               </div>
             </div>
           </div>
-        </div>
-      ) : 
-      null
-      }
+        ) : (
+          <div className="bg-blm h-full w-full sm:w-1/2 md:w-1/4  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          <div className="flex flex-col w-full h-full px-2 justify-center items-center gap-3">
+          <div className="flex flex-col gap-1 justify-center">
+          <label className="text-sm text-start">Your name</label>
+            <input
+              value={fullName}
+              onChange={handleInputChange}
+              className=" border-[1px] border-blf w-4/5 py-2 px-3 bg-gray-100 rounded-md"
+              placeholder="Your name please"
+              type="text"
+            />
+          </div>
+            <button
+              className="bg-blf text-white rounded-full py-2 w-4/5 font-[500] text-lg mt-6"
+              onClick={() => {
+                setJoined(true);
+              }}
+            >
+              JOIN
+            </button>
+            </div>
+          </div>
+        ) }
+      </div>
     </div>
   );
 }
