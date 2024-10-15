@@ -29,8 +29,6 @@ function JoinMeet() {
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
-  const [callStatus, setCallStatus] = useState("on");
-  
 
   // contexts
   const { adminCon, setAdminCon } = useFriend();
@@ -184,17 +182,6 @@ function JoinMeet() {
       };
       const adminMessageListener = async (event) => {
         const data = JSON.parse(event.data);
-
-        if(callStatus === "off"){
-          adminSocket.send(
-            JSON.stringify({ ...wsMessage, type: "off" })
-          );
-        };
-        
-        if(data.type === "off"){
-         disconnect();
-         navigate('/');
-        };
         // if Someone Reset or Refresh or Firsttime going on link
         if (data.type === "userOn" || data.type === "askingOffer") {
           const offer = await createOffer();
@@ -237,18 +224,6 @@ function JoinMeet() {
       const userMessageListener = async (event) => {
         const data = JSON.parse(event.data);
         // If admin Reset or refresh
-if(callStatus === "off"){
-  userSocket.send(
-    JSON.stringify({ ...wsMessage, type: "off" })
-  );
-};
-
-if(data.type === "off"){
- disconnect();
- navigate('/');
-};
-
-
         if (data.type === "adminOn") {
           userSocket.send(
             JSON.stringify({ ...wsMessage, type: "askingOffer" })
@@ -293,7 +268,7 @@ if(data.type === "off"){
     fullName,
     createAnswer,
     createOffer,
-    setRemoteAnswer,callStatus,disconnect,navigate
+    setRemoteAnswer,
   ]);
 
   const handleNeg = useCallback(async () => {
@@ -349,12 +324,9 @@ if(data.type === "off"){
     }
   };
 
-  const cutCall = async() => {
-   setCallStatus("off");
-   setTimeout(() => {
-   disconnect();
+  const cutCall = () => {
+    disconnect();
     navigate("/");
-   }, 2000);
   };
 
   const handleMore = useCallback(async () => {
@@ -366,19 +338,19 @@ if(data.type === "off"){
   return (
     <div>
       <div className="w-svw h-svh bg-blm  flex justify-center items-center ">
-        {!joined && !admin ? (
-          <div className="bg-blm h-full w-full sm:w-1/2 md:w-1/4  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
-          <div className="flex flex-col w-full h-full px-2 justify-center items-center gap-3">
-          <div className="flex flex-col gap-1 justify-center">
-          <label className="text-sm text-start">Your name</label>
+        {!joined ? (
+          <div className="bg-blf h-full sm:w-1/2 md:w-1/4  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+
+          
+          <div className="flex flex-col w-full h-full  px-2 justify-between items-center gap-2">
+            <label>Your name</label>
             <input
               value={fullName}
               onChange={handleInputChange}
-              className=" border-[1px] border-blf w-4/5 py-2 px-3 bg-gray-100 rounded-md"
+              className=" border-[1px] border-blf w-4/5 py-2 px-3 bg-gray-100 rounded-full mt-8"
               placeholder="Your name please"
               type="text"
             />
-          </div>
             <button
               className="bg-blf text-white rounded-full py-2 w-4/5 font-[500] text-lg mt-6"
               onClick={() => {
@@ -392,7 +364,7 @@ if(data.type === "off"){
         ) : null}
 
         {admin || joined ? (
-          <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          <div className="bg-blf h-full sm:w-1/2 md:w-1/4   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
               muted
@@ -400,12 +372,12 @@ if(data.type === "off"){
               playsInline
               className="absolute right-3 top-3 rounded-md  object-cover h-24 w-16 ring-1 ring-black"
             ></video>
-            <div className=" flex flex-col justify-center items-center h-full">
+            <div className="flex flex-col justify-center items-center h-full">
               <video
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
-                className="w-full h-full  ring-2 ring-black bg-blm rounded-md  object-cover  "
+                className="w-full h-full ring-2 ring-black bg-blm rounded-md  object-cover  "
               ></video>
             </div>
             <div className="w-full bg-transparent  py-2 flex items-center justify-center">
