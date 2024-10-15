@@ -227,10 +227,14 @@ if(adminSocketStatus){
 
     if(callStatus === "off"){
   adminSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
+  adminSocket.close();
+  navigate("/");
     };
     if(data.type === "off"){
       disconnect();
       setCallStatus2(false);
+  adminSocket.close();
+
       navigate("/");
     }
 
@@ -273,9 +277,12 @@ if(userSocketStatus && joined){
 
     if(callStatus === "off"){
       userSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
+      userSocket.close();
+      navigate("/");
         };
         if(data.type === "off"){
           disconnect();
+          userSocket.close();
           navigate("/");
         }
     // If admin Reset or refresh
