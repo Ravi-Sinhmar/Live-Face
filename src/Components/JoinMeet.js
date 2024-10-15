@@ -28,6 +28,7 @@ function JoinMeet() {
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
   const [callStatus, setCallStatus] = useState("on");
+  const [callStatus2, setCallStatus2] = useState(true);
   const [showSetting, setShowSetting] = useState(true);
 
   
@@ -229,6 +230,7 @@ if(adminSocketStatus){
     };
     if(data.type === "off"){
       disconnect();
+      setCallStatus2(false);
       navigate("/");
     }
 
@@ -359,11 +361,23 @@ return () => {
 
   const cutCall = async() => {
    setCallStatus("off");
+   setCallStatus2(false);
    setTimeout(() => {
    disconnect();
     navigate("/");
    }, 1000);
   };
+
+  useEffect(() => {
+    if (!callStatus2 && myVideo) {
+      // Stop all media tracks
+      myVideo.getTracks().forEach(track => track.stop());
+      // Clear the video source
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = null;
+      }
+    }
+  }, [callStatus2, myVideo]);
 
   const handleMore = useCallback(async () => {
     console.log("Click on More");
