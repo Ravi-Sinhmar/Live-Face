@@ -291,7 +291,7 @@ return () => {
     <React.Fragment>
         <div className="bg-blf w-screen h-screen flex flex-col justify-between overflow-hidden">
           <video ref={localVideoRef} muted autoPlay playsInline className="absolute right-2 top-2 rounded-md object-cover h-24 w-16"></video>
-          <button className="z-20 w-fit px-4 text-sm font-[300] flex text-center items-center justify-center py-1 rounded-full bg-blm ring-1 ring-blt shadow-md shadow-blt absolute h-fit right-1/2 translate-x-1/2 bottom-10" onClick={handleUserJoin}>Join</button>
+         {user && !joined  ? <button className="z-20 w-fit px-6 text-sm font-[400] flex text-center items-center justify-center py-2 rounded-full bg-blm ring-1 ring-blt shadow-md shadow-blt absolute h-fit right-1/2 translate-x-1/2 bottom-10" onClick={handleUserJoin}>Join</button> : null } 
         <div className="flex flex-col justify-center items-center h-full">
         <video ref={remoteVideoRef} muted autoPlay playsInline className="rounded-md object-cover h-full "></video>
         </div>
