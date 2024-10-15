@@ -79,7 +79,7 @@ function JoinMeet() {
     setAdminName(ad);
     setAdminCon(ad);
     setMeetingId(mId);
-    if (adminName && meetingId && setting) {
+    if (adminName && meetingId) {
       const content = { adminName, meetingId };
       fetch(`https://facesyncbackend.onrender.com/seeMeet`, {
         method: "POST",
@@ -101,7 +101,7 @@ function JoinMeet() {
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,setAdminCon,adminName,meetingId,setting]);
+  }, [searchParams,setAdminCon,adminName,meetingId]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
@@ -166,7 +166,7 @@ const startAdminSocket = useCallback(() => {
 
 
   const getMyVideo = useCallback(async () => {
-   if(setting){
+   
     try {
       const video = await navigator.mediaDevices.getUserMedia(cons);
       setMyVideo(video);
@@ -183,11 +183,12 @@ const startAdminSocket = useCallback(() => {
     } catch (error) {
       console.error('Error accessing camera:', error);
     }
-   }
-  }, [cons,audioOutput,setting]);
+  }, [cons,audioOutput]);
   useEffect(() => {
-    getMyVideo();
-  }, [getMyVideo]);
+    if(setting){
+      getMyVideo();
+    }
+  }, [getMyVideo,setting]);
   const getRemoteVideo = useCallback(()=>{
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
@@ -311,10 +312,10 @@ return () => {
   }, [handleNeg, peer]);
 
  useEffect(() => {
-    if (!showSetting) {
-      sendVideo(myVideo);
-    }
-  }, [showSetting, sendVideo, myVideo]);
+   if(myVideo && setting){
+   sendVideo(myVideo);
+   }
+  }, [sendVideo, myVideo,setting]);
 
 
 

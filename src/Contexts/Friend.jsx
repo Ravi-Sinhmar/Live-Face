@@ -9,7 +9,7 @@ function FriendProvider(props){
   const [adminCon,setAdminCon] = useState(null);
   const [cons,setCons] = useState({video:true,audio:true});
   const [audioOutput,setAudioOutput] = useState("");
-  const [setting,setSetting] = useState("none");
+  const [setting,setSetting] = useState(false);
     return(
         <MyContext.Provider value={{friend,setFriend,adminCon,setAdminCon,cons,setCons,setting,setSetting,audioOutput,setAudioOutput}}>
             {props.children}
