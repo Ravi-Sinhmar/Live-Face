@@ -44,13 +44,12 @@ function JoinMeet() {
     disconnect
   } = usePeer();
 
-  const handleInputChange = (event) => {
-    let uName = event.target.value;
-    setFullName(uName);
-    uName = uName.toLowerCase().replace(/\s+/g, "");
-    setUserName(uName);
-  };
-
+  useEffect(()=>{
+if(user){
+setFullName("DummyNameOfUser");
+setUserName("dummynameOfuser");
+}
+  },[user]);
 
   const seeMeet = useCallback(() => {
     const ad = searchParams.get("adminName");
@@ -364,7 +363,7 @@ return () => {
   return (
     <div>
       <div className="w-svw h-svh bg-blm  flex justify-center items-center">
-        {admin || joined || fetching ?  (
+        {admin || user ?  (
           <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
             <video
               ref={localVideoRef}
@@ -522,30 +521,7 @@ return () => {
               </div>
             </div>
           </div>
-        ) : (
-          <div className="bg-blm h-full w-full sm:w-1/2 md:w-1/4  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
-          <div className="flex flex-col w-full h-full px-2 justify-center items-center gap-3">
-          <div className="flex flex-col gap-1 justify-center">
-          <label className="text-sm text-start">Your name</label>
-            <input
-              value={fullName}
-              onChange={handleInputChange}
-              className=" border-[1px] border-blf w-4/5 py-2 px-3 bg-gray-100 rounded-md"
-              placeholder="Your name please"
-              type="text"
-            />
-          </div>
-            <button
-              className="bg-blf text-white rounded-full py-2 w-4/5 font-[500] text-lg mt-6"
-              onClick={() => {
-                setJoined(true);
-              }}
-            >
-              JOIN
-            </button>
-            </div>
-          </div>
-        ) }
+        ) :null }
       </div>
     </div>
   );
