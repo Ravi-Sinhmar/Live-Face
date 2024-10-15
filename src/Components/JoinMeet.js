@@ -14,10 +14,8 @@ function JoinMeet() {
   const [userName, setUserName] = useState(null);
   const [fullName, setFullName] = useState(null);
   const [meetingId, setMeetingId] = useState(null);
-  const [handShake, setHandShake] = useState(true);
   const [needWebSocket, setNeedWebSocket] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [finalOffer, setFinalOffer] = useState(null);
   const [admin, setAdmin] = useState(false);
   const [user, setUser] = useState(false);
   const [joined, setJoined] = useState(false);
@@ -237,7 +235,6 @@ if(adminSocketStatus){
 
  if (data.type === "userOn" || data.type === "askingOffer") {
   const offer = await createOffer();
-  setFinalOffer(offer);
   adminSocket.send(JSON.stringify({ ...wsMessage,type:"sendingOffer",content: offer}));
  };
 //  Getting Anser
@@ -286,6 +283,7 @@ if(userSocketStatus && joined){
 
      // If getting offer
      if (data.type === "sendingOffer") {
+      alert("got sendingOffer");
       const answer = await createAnswer(data.content);
       userSocket.send(JSON.stringify({ ...wsMessage,type:"sendingAnswer", content: answer}));
        };
