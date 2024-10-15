@@ -567,6 +567,14 @@ video {
   top: 0.75rem;
 }
 
+.right-2{
+  right: 0.5rem;
+}
+
+.top-2{
+  top: 0.5rem;
+}
+
 .z-10{
   z-index: 10;
 }
@@ -590,6 +598,11 @@ video {
 .size-8{
   width: 2rem;
   height: 2rem;
+}
+
+.size-6{
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .h-10{
@@ -616,6 +629,10 @@ video {
 
 .h-svh{
   height: 100svh;
+}
+
+.h-screen{
+  height: 100vh;
 }
 
 .w-10{
@@ -712,6 +729,10 @@ video {
 
 .rounded-md{
   border-radius: 0.375rem;
+}
+
+.rounded-lg{
+  border-radius: 0.5rem;
 }
 
 .border{
@@ -816,6 +837,16 @@ video {
 .py-5{
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
+}
+
+.px-10{
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}
+
+.py-4{
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .pb-10{
