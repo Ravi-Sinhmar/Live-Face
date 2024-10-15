@@ -31,6 +31,7 @@ function JoinMeet() {
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
   const [callStatus, setCallStatus] = useState("on");
   const [showSetting, setShowSetting] = useState(true);
+  const [trackss, setTrackss] = useState(false);
 
   
   // contexts
@@ -87,7 +88,7 @@ function JoinMeet() {
     setAdminName(ad);
     setAdminCon(ad);
     setMeetingId(mId);
-    if (adminName && meetingId) {
+    if (adminName && meetingId && setting) {
       const content = { adminName, meetingId };
       fetch(`https://facesyncbackend.onrender.com/seeMeet`, {
         method: "POST",
@@ -109,30 +110,30 @@ function JoinMeet() {
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,setAdminCon,adminName,meetingId]);
+  }, [searchParams,setAdminCon,adminName,meetingId,setting]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
 
 
 const startAdminSocket = useCallback(() => {
-      if (needWebSocket && admin) {
+      if (needWebSocket && admin && setting) {
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.ad`
         );
         setAdminSocket(newSocket);
       }
-  }, [needWebSocket, admin, meetingId]);
+  }, [needWebSocket, admin, meetingId,setting]);
 
   const startUserSocket = useCallback(() => {
-    if (needWebSocket && user && joined) {
+    if (needWebSocket && user && joined && setting) {
         const cleanName = userName.toLowerCase().replace(/\s+/g, "");
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.us`
         );
         setUserSocket(newSocket);
     }
-  }, [needWebSocket, meetingId, userName, user,joined]);
+  }, [needWebSocket, meetingId, userName, user,joined,setting]);
 
   useEffect(() => {
     startUserSocket();
@@ -174,29 +175,31 @@ const startAdminSocket = useCallback(() => {
 
 
   const getMyVideo = useCallback(async () => {
-   
+   if(setting){
     try {
       const video = await navigator.mediaDevices.getUserMedia(cons);
       setMyVideo(video);
       console.log('Video tracks:', video.getVideoTracks());
       console.log('Audio tracks:', video.getAudioTracks());
+      setTrackss(true);
   
       // Set the video source to the `videoRef`
-      if (localVideoRef.current) {
+      if (localVideoRef.current && myVideo) {
         if(audioOutput !== ""){
           await localVideoRef.current.setSinkId(audioOutput);
         }
-        localVideoRef.current.srcObject = video;
+        localVideoRef.current.srcObject = myVideo;
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
     }
-  }, [cons,audioOutput]);
+   }
+  }, [cons,audioOutput,setting,myVideo]);
   useEffect(() => {
-    if(setting){
+    if(setting && trackss){
       getMyVideo();
     }
-  }, [getMyVideo,setting]);
+  }, [getMyVideo,setting,trackss]);
   const getRemoteVideo = useCallback(()=>{
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
