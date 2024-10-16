@@ -48,7 +48,6 @@ function JoinMeet() {
   } = usePeer();
 
   const handleContinue = () => {
-   
     setSetting(true);
     setShowSetting(false);
     console.log("Constraints:", cons);
