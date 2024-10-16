@@ -33,6 +33,7 @@ function JoinMeet() {
   const [showSetting, setShowSetting] = useState(true);
   const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
   const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
+  const [isBothVideo , setIsBothVideo] = useState(0);
 
   
   // contexts
@@ -94,18 +95,16 @@ const removeUserData = () => {
     loopWithDelay();  // Start the loop
   }, []);
 
-  const checkRemoteVideoPlaying = () => {
+  const checkRemoteVideoPlaying =useCallback(() => {
     const videoElement = remoteVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setIsRemoteVideoPlaying(true);
-      console.log(" Remote Video Playing");
-      
+      setIsBothVideo(prev => prev + 1);
     } else {
       setIsRemoteVideoPlaying(false);
-      console.log(" Remote Video is  not playing");
-      
+      setIsBothVideo(0);
     }
-  };
+  },[]) 
 
   const checkMyVideoPlaying = () => {
     const videoElement = localVideoRef.current;
@@ -123,11 +122,15 @@ const removeUserData = () => {
   useEffect(() => {
     const interval1 = setInterval(checkMyVideoPlaying, 1000); // Check every second
     const interval2 = setInterval(checkRemoteVideoPlaying, 1000); // Run otherFunction every second
+    if (isBothVideo >= 10) {
+      clearInterval(interval1);
+      clearInterval(interval2);
+    }
     return () => {
       clearInterval(interval1);
       clearInterval(interval2);
     };
-  }, []);
+  }, [isBothVideo,checkRemoteVideoPlaying]);
 
 
 
