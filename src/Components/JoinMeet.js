@@ -266,7 +266,7 @@ const startAdminSocket = useCallback(() => {
 
   useEffect(() => {
     getMyVideo();
-  }, [getMyVideo,myVideo]);
+  }, [getMyVideo]);
 
 
 
