@@ -281,9 +281,19 @@ useEffect(() => {
     }
   },[remoteStream]);
 
-  useEffect(()=>{
+  useEffect(() => {
     getRemoteVideo();
-  },[getRemoteVideo]);
+
+    // Cleanup function to stop the media tracks when the component unmounts
+    return () => {
+      if (remoteStream) {
+        remoteStream.getTracks().forEach(track => track.stop());
+      }
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = null;
+      }
+    };
+  }, [getRemoteVideo,remoteStream]);
 
 
   useEffect(() => {
