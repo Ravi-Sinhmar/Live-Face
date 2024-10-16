@@ -728,6 +728,10 @@ video {
   gap: 0.25rem;
 }
 
+.gap-10{
+  gap: 2.5rem;
+}
+
 .gap-2{
   gap: 0.5rem;
 }
@@ -742,10 +746,6 @@ video {
 
 .gap-8{
   gap: 2rem;
-}
-
-.gap-10{
-  gap: 2.5rem;
 }
 
 .overflow-hidden{
@@ -768,18 +768,9 @@ video {
   border-width: 1px;
 }
 
-.border{
-  border-width: 1px;
-}
-
 .border-blf{
   --tw-border-opacity: 1;
   border-color: rgb(51 122 190 / var(--tw-border-opacity));
-}
-
-.border-blt{
-  --tw-border-opacity: 1;
-  border-color: rgb(68 71 82 / var(--tw-border-opacity));
 }
 
 .bg-black{
