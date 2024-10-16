@@ -85,7 +85,7 @@ function Setting({onContinue}) {
     <React.Fragment>
     { isLoading ? <Loader className="bg-blf">It might take 2 minutes on first time load , so please have paticence</Loader> : null}
     <div className="flex  justify-center bg-blm  items-center w-svw h-svh">
-    <div className="w-svw h-svh bg-blm  flex flex-col  justify-around items-center sm:w-10/12  md:w-3/5 lg:w-2/5 md:aspect-square">
+    <div className="w-svw h-svh bg-blm  px-4 flex flex-col  justify-around items-center sm:w-10/12  md:w-3/5 lg:w-2/5 md:aspect-square">
         <div className="flex flex-col items-center w-full gap-8">
         <button onClick={onContinue}  className="flex  items-center w-full  rounded-md  ">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="h-8 w-8 text-blm  p-2 font-[500] bg-blf  rounded-full">
