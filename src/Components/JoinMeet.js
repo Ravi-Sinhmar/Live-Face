@@ -34,6 +34,9 @@ function JoinMeet() {
   const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
   const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
   const [isBothVideo , setIsBothVideo] = useState(0);
+  const [isLoading , setIsLoading] = useState(true);
+  const[ws1Try,setWs1Try] = useState(0);
+  const[ws2Try,setWs2Try] = useState(0);
 
   
   // contexts
@@ -124,7 +127,7 @@ const removeUserData = () => {
   useEffect(() => {
     const interval1 = setInterval(checkMyVideoPlaying, 1000); // Check every second
     const interval2 = setInterval(checkRemoteVideoPlaying, 1000); // Run otherFunction every second
-    if (isBothVideo >= 20) {
+    if (isBothVideo >= 10) {
       clearInterval(interval1);
       clearInterval(interval2);
     }
@@ -136,9 +139,12 @@ const removeUserData = () => {
 
 
 useEffect(()=>{
-  if(isBothVideo >= 20){
+  if(isBothVideo >= 5){
+    setIsLoading(false);
     alert("Fully Connected");
     console.log("Fully Connected");
+  }else{
+    setIsLoading(true);
   }
 },[isBothVideo]);
 
@@ -274,6 +280,27 @@ const startAdminSocket = useCallback(() => {
   }, [getMyVideo,setting]);
 
 
+
+  const cutCall = useCallback(async() => {
+    setCallStatus("off");
+    setCallStatus2(false);
+    setTimeout(() => {
+    disconnect();
+    removeUserData();
+    navigate("/");
+    }, 1000);
+   },[disconnect,navigate]);
+ 
+   useEffect(() => {
+     if (!callStatus2) {
+       // Stop all media tracks
+       myVideo.getTracks().forEach(track => track.stop());
+       // Clear the video source
+       if (localVideoRef.current) {
+         localVideoRef.current.srcObject = null;
+       }
+     }
+   }, [callStatus2, myVideo]);
 // To reset the video stream when constraints change
 useEffect(() => {
   if (myVideo && localVideoRef.current) {
@@ -318,11 +345,7 @@ if(data.OnlyAvailable){
 
 
     if(data.type === "off"){
-      disconnect();
-      setCallStatus2(false);
-  adminSocket.close();
-  removeUserData();
-      navigate("/");
+     cutCall.click();
     }
 
 
@@ -370,14 +393,10 @@ if(userSocketStatus && joined){
       userSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
       userSocket.close();
       removeUserData();
-
       navigate("/");
         };
         if(data.type === "off"){
-          disconnect();
-          userSocket.close();
-          removeUserData();
-          navigate("/");
+          cutCall.click();
         }
     // If admin Reset or refresh
     if (data.type === "adminOn") {
@@ -405,7 +424,7 @@ return () => {
   userSocket.removeEventListener("message", userMessageListener);
 };
 }
-  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer,setRemoteAnswer,disconnect,callStatus,navigate,setting]);
+  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer,setRemoteAnswer,callStatus,navigate,setting,cutCall]);
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
@@ -460,26 +479,7 @@ return () => {
     }
   };
 
-  const cutCall = async() => {
-   setCallStatus("off");
-   setCallStatus2(false);
-   setTimeout(() => {
-   disconnect();
-   removeUserData();
-   navigate("/");
-   }, 1000);
-  };
-
-  useEffect(() => {
-    if (!callStatus2 && myVideo) {
-      // Stop all media tracks
-      myVideo.getTracks().forEach(track => track.stop());
-      // Clear the video source
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = null;
-      }
-    }
-  }, [callStatus2, myVideo]);
+ 
 
   const handleMore = useCallback(async () => {
     window.location.reload();
