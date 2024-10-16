@@ -120,7 +120,7 @@ const removeUserData = () => {
   useEffect(()=>{
     checkMyVideoPlaying();
     checkRemoteVideoPlaying();
-  },[]);
+  });
 
 useEffect(()=>{
   if(isMyVideoPlaying && isRemoteVideoPlaying){
