@@ -178,7 +178,7 @@ if(data.token){
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,meetingId,adminCon,setAdminCon]);
+  }, [searchParams,meetingId,adminCon,setAdminCon,ReConnect]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
