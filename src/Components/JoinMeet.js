@@ -28,6 +28,7 @@ function JoinMeet() {
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
   const [callStatus, setCallStatus] = useState("on");
+  const [socketStatus, setSocketStatus] = useState(false);
   const [callStatus2, setCallStatus2] = useState(true);
   const [showSetting, setShowSetting] = useState(true);
 
@@ -255,6 +256,9 @@ if(adminSocketStatus){
   const adminMessageListener =async (event)=>{
     const data = JSON.parse(event.data);
     // if Someone Reset or Refresh or Firsttime going on link
+if(data.OnlyAvailable){
+  adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
+}
 
     if(callStatus === "off"){
   adminSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
@@ -262,6 +266,8 @@ if(adminSocketStatus){
   removeUserData();
   navigate("/");
     };
+
+
     if(data.type === "off"){
       disconnect();
       setCallStatus2(false);
@@ -307,6 +313,10 @@ if(userSocketStatus && joined){
   const userMessageListener = async(event)=>{
     const data = JSON.parse(event.data);
 
+
+    if(data.OnlyAvailable){
+      userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
+    }
     if(callStatus === "off"){
       userSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
       userSocket.close();
