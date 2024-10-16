@@ -44,7 +44,7 @@ function JoinMeet() {
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,disconnect
+    remoteStream,disconnect,
   } = usePeer();
 
   const handleContinue = () => {
@@ -135,12 +135,7 @@ const removeUserData = () => {
   }, [isBothVideo,checkRemoteVideoPlaying]);
 
 
-useEffect(()=>{
-  if(isBothVideo >= 20){
-    alert("Fully Connected");
-    console.log("Fully Connected");
-  }
-},[isBothVideo]);
+
 
 
 
@@ -305,9 +300,7 @@ if(adminSocketStatus){
   const adminMessageListener =async (event)=>{
     const data = JSON.parse(event.data);
     // if Someone Reset or Refresh or Firsttime going on link
-if(data.OnlyAvailable){
-  adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
-}
+
 
     if(callStatus === "off"){
   adminSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
@@ -363,9 +356,7 @@ if(userSocketStatus && joined){
     const data = JSON.parse(event.data);
 
 
-    if(data.OnlyAvailable){
-      userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
-    }
+  
     if(callStatus === "off"){
       userSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
       userSocket.close();
@@ -494,29 +485,31 @@ return () => {
      {showSetting ? (
         <Connecting  onContinue={handleContinue} />
       ):
-        (<div className="w-svw h-svh bg-blm  flex justify-center items-center">
-          <div className="bg-transparent ring-2 ring-black rounded-lg h-full w-full md:w-1/2 md:aspect-square  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+        
+        (<div className="flex justify-center bg-blm  items-center w-svw h-svh">
+        <div className="w-svw h-svh bg-blm  flex justify-center items-center sm:w-10/12  md:w-3/5 lg:w-2/5 md:aspect-square">
+        <div className="bg-transparent ring-4 ring-blf rounded-lg h-full w-full flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          
             <video
               ref={localVideoRef}
               muted
               autoPlay
               playsInline
-              className="absolute right-3 top-3 rounded-md  object-cover h-24 w-16 ring-1 ring-black"
+              className="absolute right-4 top-4 rounded-md  object-cover h-28 w-20  sm:h-32 sm:w-24  ring-2 ring-blm"
             ></video>
-            <button onClick={checkRemoteVideoPlaying} className="absolute z-20 flex items-center justify-center text-center bg-blf h-14 w-14 rounded-full text-white p-1.5 right-4 bottom-24"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 flex items-center text-center justify-center">
+            {/* <button onClick={checkRemoteVideoPlaying} className="absolute z-20 flex items-center justify-center text-center bg-blf h-14 w-14 rounded-full text-white p-1.5 right-4 bottom-24"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 flex items-center text-center justify-center">
   <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-</svg></button>
-
-            <div className="flex flex-col justify-center items-center h-full sm:h-9/12 md:h-4/6 md:aspect-square">
+</svg></button> */}
+           <div className="flex flex-col justify-center items-center h-full">
               <video
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
-                className="w-full h-full  ring-2 ring-black bg-blm rounded-md  object-cover  "
+                 className="w-full h-full md:aspect-square  ring-2 ring-blt bg-blm rounded-md  object-cover"
               ></video>
             </div>
             <div className="w-full bg-transparent  py-2 flex items-center justify-center">
-              <div className="flex justify-between w-full rounded-md ring-2 ring-black items-center px-4 py-2 bg-blm h-fit ">
+            <div className="flex justify-between w-full rounded-md ring-2 ring-black items-center px-4 py-2 bg-blm h-fit ">
                 <button
                   onClick={toggleMic}
                   className="flex flex-col text-sm items-center justify-center gap-1"
@@ -640,7 +633,10 @@ return () => {
               </div>
             </div>
           </div>
-          </div>)}
+          </div>
+          </div>
+          
+        )}
     </React.Fragment>
   );
 }
