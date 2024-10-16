@@ -44,7 +44,7 @@ function JoinMeet() {
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,disconnect,
+    remoteStream,disconnect
   } = usePeer();
 
   const handleContinue = () => {
@@ -135,7 +135,12 @@ const removeUserData = () => {
   }, [isBothVideo,checkRemoteVideoPlaying]);
 
 
-
+useEffect(()=>{
+  if(isBothVideo >= 20){
+    alert("Fully Connected");
+    console.log("Fully Connected");
+  }
+},[isBothVideo]);
 
 
 
@@ -300,7 +305,9 @@ if(adminSocketStatus){
   const adminMessageListener =async (event)=>{
     const data = JSON.parse(event.data);
     // if Someone Reset or Refresh or Firsttime going on link
-
+if(data.OnlyAvailable){
+  adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
+}
 
     if(callStatus === "off"){
   adminSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
@@ -356,7 +363,9 @@ if(userSocketStatus && joined){
     const data = JSON.parse(event.data);
 
 
-  
+    if(data.OnlyAvailable){
+      userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
+    }
     if(callStatus === "off"){
       userSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
       userSocket.close();
