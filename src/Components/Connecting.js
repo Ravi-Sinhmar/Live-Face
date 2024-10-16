@@ -82,11 +82,10 @@ function Setting({onContinue}) {
     }
     
     return(
-
-        <React.Fragment>
-{ isLoading ? <Loader className="bg-blf">It might take 2 minutes on first time load , so please have paticence</Loader> : null}
-      <div className="w-svw h-svh flex items-center justify-center">
-        <div className="flex flex-col w-full   md:w-1/4  h-full bg-blt py-5  pb-12 px-2 justify-between items-center gap-10">
+    <React.Fragment>
+    { isLoading ? <Loader className="bg-blf">It might take 2 minutes on first time load , so please have paticence</Loader> : null}
+    <div className="flex justify-center bg-blm  items-center w-svw h-svh">
+    <div className="w-svw h-svh bg-blm  flex justify-center items-center sm:w-10/12  md:w-3/5 lg:w-2/5 md:aspect-square">
         <div className="flex flex-col items-center w-full gap-8">
         <button onClick={onContinue}  className="flex  items-center w-full  rounded-md  ">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="h-8 w-8 text-blm  p-2 font-[500] bg-blf  rounded-full">
