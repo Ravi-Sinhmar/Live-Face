@@ -10,7 +10,7 @@ function JoinMeet() {
   const navigate = useNavigate();
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
-  const [adminName, setAdminName] = useState(null); 
+  const [adminName, setAdminName] = useState(null); //no need to ReConnect
   const [userName, setUserName] = useState(null);   
   const [fullName, setFullName] = useState(null);   
   const [meetingId, setMeetingId] = useState(null);
@@ -54,6 +54,7 @@ function JoinMeet() {
     setShowSetting(false);
     console.log("Constraints:", cons);
   };
+
 
 const getUserData = () => {
   const id = localStorage.getItem('userId');
@@ -183,14 +184,12 @@ if(data.token){
 
 const startAdminSocket = useCallback(() => {
       if (needWebSocket && admin) {
-        const cleanName = userName.toLowerCase().replace(/\s+/g, "");
-
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.ad`
         );
         setAdminSocket(newSocket);
       }
-  }, [needWebSocket, admin, meetingId,userName]);
+  }, [needWebSocket, admin, meetingId]);
 
   const startUserSocket = useCallback(() => {
     if (needWebSocket && user && joined) {
@@ -263,18 +262,10 @@ const startAdminSocket = useCallback(() => {
 
 
   useEffect(() => {
-    getMyVideo();
-
-    // Cleanup function to stop the media tracks when the component unmounts
-    // return () => {
-    //   if (myVideo) {
-    //     myVideo.getTracks().forEach(track => track.stop());
-    //   }
-    //   if (localVideoRef.current) {
-    //     localVideoRef.current.srcObject = null;
-    //   }
-    // };
-  }, [getMyVideo]);
+    if(setting){
+      getMyVideo();
+    }
+  }, [getMyVideo,setting]);
 
 
 // To reset the video stream when constraints change
@@ -290,19 +281,9 @@ useEffect(() => {
     }
   },[remoteStream]);
 
-  useEffect(() => {
+  useEffect(()=>{
     getRemoteVideo();
-
-    // Cleanup function to stop the media tracks when the component unmounts
-    // return () => {
-    //   if (remoteStream) {
-    //     remoteStream.getTracks().forEach(track => track.stop());
-    //   }
-    //   if (remoteVideoRef.current) {
-    //     remoteVideoRef.current.srcObject = null;
-    //   }
-    // };
-  }, [getRemoteVideo]);
+  },[getRemoteVideo]);
 
 
   useEffect(() => {
@@ -532,7 +513,7 @@ useEffect(() => {
               playsInline
               className="absolute right-3 top-3 rounded-md  object-cover h-24 w-16 ring-1 ring-black"
             ></video>
-            <button onClick={handleUserJoin} className="absolute z-20 flex items-center justify-center text-center bg-blf h-14 w-14 rounded-full text-white p-1.5 right-4 bottom-24"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 flex items-center text-center justify-center">
+            <button onClick={checkRemoteVideoPlaying} className="absolute z-20 flex items-center justify-center text-center bg-blf h-14 w-14 rounded-full text-white p-1.5 right-4 bottom-24"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 flex items-center text-center justify-center">
   <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
 </svg></button>
 
