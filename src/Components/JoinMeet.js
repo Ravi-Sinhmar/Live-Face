@@ -31,6 +31,7 @@ function JoinMeet() {
   const [socketStatus, setSocketStatus] = useState(false);
   const [callStatus2, setCallStatus2] = useState(true);
   const [showSetting, setShowSetting] = useState(true);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   
   // contexts
@@ -93,6 +94,22 @@ const removeUserData = () => {
   }, []);
 
   
+
+  
+
+  const checkVideoPlaying = () => {
+    const videoElement = remoteVideoRef.current;
+    if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
+      setIsVideoPlaying(true);
+    } else {
+      setIsVideoPlaying(false);
+    }
+  };
+
+useEffect(()=>{
+checkVideoPlaying();
+console.log(checkVideoPlaying);
+});
 
 
   const seeMeet = useCallback(() => {
