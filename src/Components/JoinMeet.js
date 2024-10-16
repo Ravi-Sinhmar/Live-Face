@@ -100,12 +100,11 @@ const removeUserData = () => {
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setIsRemoteVideoPlaying(true);
       setIsBothVideo(prev => prev + 1);
-      console.log("Remote Playing");
 
     } else {
       setIsRemoteVideoPlaying(false);
       setIsBothVideo(0);
-      console.log("Remote Video is not playing");
+    
 
     }
   },[]) 
@@ -115,13 +114,10 @@ const removeUserData = () => {
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setMyIsVideoPlaying(true);
       setIsBothVideo(prev => prev + 1);
-      console.log(" My Video Playing");
       
     } else {
       setMyIsVideoPlaying(false);
       setIsBothVideo(0);
-      console.log(" My Video is not playing");
-     
     }
   };
 
@@ -138,6 +134,13 @@ const removeUserData = () => {
     };
   }, [isBothVideo,checkRemoteVideoPlaying]);
 
+
+useEffect(()=>{
+  if(isBothVideo >= 20){
+    alert("Fully Connected");
+    console.log("Fully Connected");
+  }
+},[isBothVideo]);
 
 
 
