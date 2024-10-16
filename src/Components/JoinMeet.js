@@ -107,8 +107,8 @@ const removeUserData = () => {
   };
 
 useEffect(()=>{
-checkVideoPlaying();
-console.log(checkVideoPlaying);
+const vid = checkVideoPlaying();
+console.log(vid);
 });
 
 
