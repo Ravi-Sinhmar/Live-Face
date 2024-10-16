@@ -320,7 +320,7 @@ if(adminSocketStatus){
     }
 
 
- if (data.type === "userOn") {
+ if (data.type === "userOn" || data.type === "askingOffer") {
   const offer = await createOffer();
   adminSocket.send(JSON.stringify({ ...wsMessage,type:"sendingOffer",content: offer}));
  };
