@@ -184,12 +184,13 @@ if(data.token){
 
 const startAdminSocket = useCallback(() => {
       if (needWebSocket && admin) {
+        const cleanName = userName.toLowerCase().replace(/\s+/g, "");
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.ad`
         );
         setAdminSocket(newSocket);
       }
-  }, [needWebSocket, admin, meetingId]);
+  }, [needWebSocket, admin, meetingId,userName]);
 
   const startUserSocket = useCallback(() => {
     if (needWebSocket && user && joined) {
@@ -263,16 +264,6 @@ const startAdminSocket = useCallback(() => {
 
   useEffect(() => {
     getMyVideo();
-
-    // Cleanup function to stop the media tracks when the component unmounts
-    return () => {
-      if (myVideo) {
-        myVideo.getTracks().forEach(track => track.stop());
-      }
-      if (localVideoRef) {
-        localVideoRef.srcObject = null;
-      }
-    };
   }, [getMyVideo,myVideo]);
 
 
