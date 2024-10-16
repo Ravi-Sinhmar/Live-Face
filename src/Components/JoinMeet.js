@@ -269,8 +269,8 @@ const startAdminSocket = useCallback(() => {
       if (myVideo) {
         myVideo.getTracks().forEach(track => track.stop());
       }
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = null;
+      if (localVideoRef) {
+        localVideoRef.srcObject = null;
       }
     };
   }, [getMyVideo,myVideo]);
