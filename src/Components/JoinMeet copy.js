@@ -10,9 +10,9 @@ function JoinMeet() {
   const navigate = useNavigate();
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
-  const [adminName, setAdminName] = useState(null); 
-  const [userName, setUserName] = useState(null);   
-  const [fullName, setFullName] = useState(null);   
+  const [adminName, setAdminName] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const [fullName, setFullName] = useState(null);
   const [meetingId, setMeetingId] = useState(null);
   const [needWebSocket, setNeedWebSocket] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,45 +34,52 @@ function JoinMeet() {
   const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
   const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
   const [isBothVideo , setIsBothVideo] = useState(0);
-  const [isLoading , setIsLoading] = useState(true);
-  const[ws1Try,setWs1Try] = useState(0);
-  const[ws2Try,setWs2Try] = useState(0);
 
   
   // contexts
-  const {adminCon,setAdminCon,cons,audioOutput,setting,setSetting} = useFriend();
+  const {adminCon, setAdminCon,cons,audioOutput,setting,setSetting} = useFriend();
   const {
     peer,
     createOffer,
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,disconnect,setReConnect,ReConnect
+    remoteStream,disconnect,
   } = usePeer();
 
   const handleContinue = () => {
+    setSetting(true);
     setShowSetting(false);
     console.log("Constraints:", cons);
+    // Proceed with using cons
   };
+
+
 
 const getUserData = () => {
   const id = localStorage.getItem('userId');
   const name = localStorage.getItem('userName');
   return { id, name };
 };
+
 const storeUserData = (id, name) => {
   localStorage.setItem('userId', id);
   localStorage.setItem('userName', name);
 };
+
 const removeUserData = () => {
   localStorage.removeItem('userId');
   localStorage.removeItem('userName');
 };
 
+
+
+
   const handleUserJoin = useCallback(() => {
     let tries = 0;  // Initialize your tries counter here
     console.log(tries)
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  
     const loopWithDelay = async () => {
       while (tries < 4) {
         let uName = "A";
@@ -117,7 +124,7 @@ const removeUserData = () => {
   useEffect(() => {
     const interval1 = setInterval(checkMyVideoPlaying, 1000); // Check every second
     const interval2 = setInterval(checkRemoteVideoPlaying, 1000); // Run otherFunction every second
-    if (isBothVideo >= 10) {
+    if (isBothVideo >= 20) {
       clearInterval(interval1);
       clearInterval(interval2);
     }
@@ -128,15 +135,9 @@ const removeUserData = () => {
   }, [isBothVideo,checkRemoteVideoPlaying]);
 
 
-useEffect(()=>{
-  if(isBothVideo >= 5){
-    setIsLoading(false);
-    alert("Fully Connected");
-    console.log("Fully Connected");
-  }else{
-    setIsLoading(true);
-  }
-},[isBothVideo]);
+
+
+
 
   const seeMeet = useCallback(() => {
     const ad = searchParams.get("adminName");
@@ -148,6 +149,8 @@ useEffect(()=>{
       setAdminCon(name);
     };
     if (adminCon && meetingId) {
+      
+
       const content = { adminName:adminCon, meetingId:meetingId };
       fetch(`https://facesyncbackend.onrender.com/seeMeet`, {
         method: "POST",
@@ -175,22 +178,19 @@ if(data.token){
         .catch((err) => console.log(err));
     }
   }, [searchParams,meetingId,adminCon,setAdminCon]);
-  
   useEffect(() => {
     seeMeet();
-  },[seeMeet,ReConnect]);
+  },[seeMeet]);
 
 
 const startAdminSocket = useCallback(() => {
       if (needWebSocket && admin) {
-        const cleanName = userName.toLowerCase().replace(/\s+/g, "");
-
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.ad`
         );
         setAdminSocket(newSocket);
       }
-  }, [needWebSocket, admin, meetingId,userName]);
+  }, [needWebSocket, admin, meetingId]);
 
   const startUserSocket = useCallback(() => {
     if (needWebSocket && user && joined) {
@@ -263,18 +263,10 @@ const startAdminSocket = useCallback(() => {
 
 
   useEffect(() => {
-    getMyVideo();
-
-    // Cleanup function to stop the media tracks when the component unmounts
-    // return () => {
-    //   if (myVideo) {
-    //     myVideo.getTracks().forEach(track => track.stop());
-    //   }
-    //   if (localVideoRef.current) {
-    //     localVideoRef.current.srcObject = null;
-    //   }
-    // };
-  }, [getMyVideo]);
+    if(setting){
+      getMyVideo();
+    }
+  }, [getMyVideo,setting]);
 
 
 // To reset the video stream when constraints change
@@ -284,158 +276,128 @@ useEffect(() => {
   }
 }, [myVideo, cons]);
 
+
+
   const getRemoteVideo = useCallback(()=>{
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
     }
   },[remoteStream]);
 
-  useEffect(() => {
+  useEffect(()=>{
     getRemoteVideo();
+  },[getRemoteVideo]);
 
-    // Cleanup function to stop the media tracks when the component unmounts
-    // return () => {
-    //   if (remoteStream) {
-    //     remoteStream.getTracks().forEach(track => track.stop());
-    //   }
-    //   if (remoteVideoRef.current) {
-    //     remoteVideoRef.current.srcObject = null;
-    //   }
-    // };
-  }, [getRemoteVideo]);
+  useEffect(()=>{
+if(adminSocketStatus){
+  const wsMessage = {
+    admin:true,
+    cleanUserName: adminCon,
+    fullUserName:"updateMe",
+    cleanFriendName : "updateMe",
+    fullFiendName:"updateMe",
+  };
+  const adminMessageListener =async (event)=>{
+    const data = JSON.parse(event.data);
+    // if Someone Reset or Refresh or Firsttime going on link
 
 
-  useEffect(() => {
-    if (adminSocketStatus) {
-      const wsMessage = {
-        admin: true,
-        cleanUserName: adminCon,
-        fullUserName: "updateMe",
-        cleanFriendName: "updateMe",
-        fullFiendName: "updateMe",
-      };
-  
-      const adminMessageListener = async (event) => {
-        const data = JSON.parse(event.data);
-  
-        if (data.OnlyAvailable) {
-          adminSocket.send(JSON.stringify({ ...wsMessage, type: "adminOn" }));
-        }
-  
-        if (callStatus === "off") {
-          adminSocket.send(JSON.stringify({ ...wsMessage, type: "off", content: null }));
-          adminSocket.close();
-          removeUserData();
-          navigate("/");
-        }
-  
-        if (data.type === "off") {
-          disconnect();
-          setCallStatus2(false);
-          adminSocket.close();
-          removeUserData();
-          navigate("/");
-        }
-  
-        if (data.type === "userOn" || data.type === "askingOffer") {
-          const offer = await createOffer();
-          adminSocket.send(JSON.stringify({ ...wsMessage, type: "sendingOffer", content: offer }));
-        }
-  
-        if (data.type === "sendingAnswer") {
-          await setRemoteAnswer(data.content);
-        }
-  
-        if (data.type === "negAnswer") {
-          await setRemoteAnswer(data.content);
-        }
-      };
-  
-      if (setting) {
-        adminSocket.send(JSON.stringify({ ...wsMessage, type: "adminOn" }));
-      }
-  
-      adminSocket.addEventListener("message", adminMessageListener);
-      return () => {
-        adminSocket.removeEventListener("message", adminMessageListener);
-        adminSocket.close();
-      };
+    if(callStatus === "off"){
+  adminSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
+  adminSocket.close();
+  removeUserData();
+  navigate("/");
+    };
+
+
+    if(data.type === "off"){
+      disconnect();
+      setCallStatus2(false);
+  adminSocket.close();
+  removeUserData();
+      navigate("/");
     }
-  
-    if (userSocketStatus && joined) {
-      const wsMessage = {
-        admin: false,
-        cleanUserName: userName,
-        fullUserName: fullName,
-        cleanFriendName: adminCon,
-        fullFiendName: "updateMe",
+
+
+ if (data.type === "userOn" || data.type === "askingOffer") {
+  const offer = await createOffer();
+  adminSocket.send(JSON.stringify({ ...wsMessage,type:"sendingOffer",content: offer}));
+ };
+//  Getting Anser
+ if (data.type === "sendingAnswer") {
+  await setRemoteAnswer(data.content);
+ };
+
+ //  neg Anser
+ if (data.type === "negAnswer") {
+  await setRemoteAnswer(data.content);
+};
       };
+      if(setting){
+        adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
+      }
+   // Listening for messages 
+   adminSocket.addEventListener("message", adminMessageListener);
+  return () => {
+    adminSocket.removeEventListener("message", adminMessageListener);
+  };
+
+};
+
+if(userSocketStatus && joined){
+  const wsMessage = {
+    admin:false,
+    cleanUserName: userName,
+    fullUserName:fullName,
+    cleanFriendName :adminCon,
+    fullFiendName:"updateMe",
+  };
+  const userMessageListener = async(event)=>{
+    const data = JSON.parse(event.data);
+
+
   
-      const userMessageListener = async (event) => {
-        const data = JSON.parse(event.data);
-  
-        if (data.OnlyAvailable) {
-          userSocket.send(JSON.stringify({ ...wsMessage, type: "userOn" }));
-        }
-  
-        if (callStatus === "off") {
-          userSocket.send(JSON.stringify({ ...wsMessage, type: "off", content: null }));
-          userSocket.close();
-          removeUserData();
-          navigate("/");
-        }
-  
-        if (data.type === "off") {
+    if(callStatus === "off"){
+      userSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
+      userSocket.close();
+      removeUserData();
+
+      navigate("/");
+        };
+        if(data.type === "off"){
           disconnect();
           userSocket.close();
           removeUserData();
           navigate("/");
         }
-  
-        if (data.type === "adminOn") {
-          userSocket.send(JSON.stringify({ ...wsMessage, type: "askingOffer" }));
-        }
-  
-        if (data.type === "sendingOffer") {
-          const answer = await createAnswer(data.content);
-          userSocket.send(JSON.stringify({ ...wsMessage, type: "sendingAnswer", content: answer }));
-        }
-  
-        if (data.type === "negNeed") {
-          const answer = await createAnswer(data.content);
-          userSocket.send(JSON.stringify({ ...wsMessage, type: "negAnswer", content: answer }));
-        }
-      };
-  
-      if (!joined || setting) {
-        userSocket.send(JSON.stringify({ ...wsMessage, type: "userOn" }));
-      }
-  
-      userSocket.addEventListener("message", userMessageListener);
-      return () => {
-        userSocket.removeEventListener("message", userMessageListener);
-        userSocket.close();
-      };
-    }
-  }, [
-    adminSocketStatus,
-    userSocketStatus,
-    adminCon,
-    adminSocket,
-    userSocket,
-    userName,
-    joined,
-    fullName,
-    createAnswer,
-    createOffer,
-    setRemoteAnswer,
-    disconnect,
-    callStatus,
-    navigate,
-    setting,
-  ]);
-  
- 
+    // If admin Reset or refresh
+    if (data.type === "adminOn") {
+    userSocket.send(JSON.stringify({ ...wsMessage,type:"askingOffer"}));
+     };
+
+     // If getting offer
+     if (data.type === "sendingOffer") {
+     
+      const answer = await createAnswer(data.content);
+      userSocket.send(JSON.stringify({ ...wsMessage,type:"sendingAnswer", content: answer}));
+       };
+
+         // If neg need
+      if (data.type === "negNeed") {
+      const answer = await createAnswer(data.content)
+      userSocket.send(JSON.stringify({ ...wsMessage,type:"negAnswer", content: answer}));
+       };
+            };
+if(!joined || setting){
+  userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
+}
+  userSocket.addEventListener("message", userMessageListener);
+return () => {
+  userSocket.removeEventListener("message", userMessageListener);
+};
+}
+  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer,setRemoteAnswer,disconnect,callStatus,navigate,setting]);
+
   const handleNeg = useCallback(async () => {
     console.log("nego need");
     const wsMessage = {
@@ -523,29 +485,31 @@ useEffect(() => {
      {showSetting ? (
         <Connecting  onContinue={handleContinue} />
       ):
-        (<div className="w-svw h-svh bg-blm  flex justify-center items-center">
-          <div className="bg-transparent ring-2 ring-black rounded-lg h-full w-full md:w-1/2 md:aspect-square  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+        
+        (<div className="flex justify-center bg-blm  items-center w-svw h-svh">
+        <div className="w-svw h-svh bg-blm  flex justify-center items-center sm:w-10/12  md:w-3/5 lg:w-2/5 md:aspect-square">
+        <div className="bg-transparent ring-4 ring-blf rounded-lg h-full w-full flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          
             <video
               ref={localVideoRef}
               muted
               autoPlay
               playsInline
-              className="absolute right-3 top-3 rounded-md  object-cover h-24 w-16 ring-1 ring-black"
+              className="absolute right-4 top-4 rounded-md  object-cover h-28 w-20  sm:h-32 sm:w-24  ring-2 ring-blm"
             ></video>
-            <button onClick={handleUserJoin} className="absolute z-20 flex items-center justify-center text-center bg-blf h-14 w-14 rounded-full text-white p-1.5 right-4 bottom-24"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 flex items-center text-center justify-center">
+            {/* <button onClick={checkRemoteVideoPlaying} className="absolute z-20 flex items-center justify-center text-center bg-blf h-14 w-14 rounded-full text-white p-1.5 right-4 bottom-24"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 flex items-center text-center justify-center">
   <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-</svg></button>
-
-            <div className="flex flex-col justify-center items-center h-full sm:h-9/12 md:h-4/6 md:aspect-square">
+</svg></button> */}
+           <div className="flex flex-col justify-center items-center h-full">
               <video
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
-                className="w-full h-full  ring-2 ring-black bg-blm rounded-md  object-cover  "
+                 className="w-full h-full md:aspect-square  ring-2 ring-blt bg-blm rounded-md  object-cover"
               ></video>
             </div>
             <div className="w-full bg-transparent  py-2 flex items-center justify-center">
-              <div className="flex justify-between w-full rounded-md ring-2 ring-black items-center px-4 py-2 bg-blm h-fit ">
+            <div className="flex justify-between w-full rounded-md ring-2 ring-black items-center px-4 py-2 bg-blm h-fit ">
                 <button
                   onClick={toggleMic}
                   className="flex flex-col text-sm items-center justify-center gap-1"
@@ -669,7 +633,10 @@ useEffect(() => {
               </div>
             </div>
           </div>
-          </div>)}
+          </div>
+          </div>
+          
+        )}
     </React.Fragment>
   );
 }
