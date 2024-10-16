@@ -10,9 +10,9 @@ function JoinMeet() {
   const navigate = useNavigate();
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
-  const [adminName, setAdminName] = useState(null);
-  const [userName, setUserName] = useState(null);
-  const [fullName, setFullName] = useState(null);
+  const [adminName, setAdminName] = useState(null); 
+  const [userName, setUserName] = useState(null);   
+  const [fullName, setFullName] = useState(null);   
   const [meetingId, setMeetingId] = useState(null);
   const [needWebSocket, setNeedWebSocket] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -40,49 +40,39 @@ function JoinMeet() {
 
   
   // contexts
-  const {adminCon, setAdminCon,cons,audioOutput,setting,setSetting} = useFriend();
+  const {adminCon,setAdminCon,cons,audioOutput,setting,setSetting} = useFriend();
   const {
     peer,
     createOffer,
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,disconnect
+    remoteStream,disconnect,setReConnect,ReConnect
   } = usePeer();
 
   const handleContinue = () => {
-    setSetting(true);
     setShowSetting(false);
     console.log("Constraints:", cons);
-    // Proceed with using cons
   };
-
-
 
 const getUserData = () => {
   const id = localStorage.getItem('userId');
   const name = localStorage.getItem('userName');
   return { id, name };
 };
-
 const storeUserData = (id, name) => {
   localStorage.setItem('userId', id);
   localStorage.setItem('userName', name);
 };
-
 const removeUserData = () => {
   localStorage.removeItem('userId');
   localStorage.removeItem('userName');
 };
 
-
-
-
   const handleUserJoin = useCallback(() => {
     let tries = 0;  // Initialize your tries counter here
     console.log(tries)
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-  
     const loopWithDelay = async () => {
       while (tries < 4) {
         let uName = "A";
@@ -148,8 +138,6 @@ useEffect(()=>{
   }
 },[isBothVideo]);
 
-
-
   const seeMeet = useCallback(() => {
     const ad = searchParams.get("adminName");
     const mId = searchParams.get("meetingId");
@@ -160,8 +148,6 @@ useEffect(()=>{
       setAdminCon(name);
     };
     if (adminCon && meetingId) {
-      
-
       const content = { adminName:adminCon, meetingId:meetingId };
       fetch(`https://facesyncbackend.onrender.com/seeMeet`, {
         method: "POST",
@@ -189,19 +175,22 @@ if(data.token){
         .catch((err) => console.log(err));
     }
   }, [searchParams,meetingId,adminCon,setAdminCon]);
+  
   useEffect(() => {
     seeMeet();
-  },[seeMeet]);
+  },[seeMeet,ReConnect]);
 
 
 const startAdminSocket = useCallback(() => {
       if (needWebSocket && admin) {
+        const cleanName = userName.toLowerCase().replace(/\s+/g, "");
+
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.ad`
         );
         setAdminSocket(newSocket);
       }
-  }, [needWebSocket, admin, meetingId]);
+  }, [needWebSocket, admin, meetingId,userName]);
 
   const startUserSocket = useCallback(() => {
     if (needWebSocket && user && joined) {
@@ -274,33 +263,20 @@ const startAdminSocket = useCallback(() => {
 
 
   useEffect(() => {
-    if(setting){
-      getMyVideo();
-    }
-  }, [getMyVideo,setting]);
+    getMyVideo();
+
+    // Cleanup function to stop the media tracks when the component unmounts
+    return () => {
+      if (myVideo) {
+        myVideo.getTracks().forEach(track => track.stop());
+      }
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = null;
+      }
+    };
+  }, [getMyVideo, myVideo]);
 
 
-
-  const cutCall = useCallback(async() => {
-    setCallStatus("off");
-    setCallStatus2(false);
-    setTimeout(() => {
-    disconnect();
-    removeUserData();
-    navigate("/");
-    }, 1000);
-   },[disconnect,navigate]);
- 
-   useEffect(() => {
-     if (!callStatus2) {
-       // Stop all media tracks
-       myVideo.getTracks().forEach(track => track.stop());
-       // Clear the video source
-       if (localVideoRef.current) {
-         localVideoRef.current.srcObject = null;
-       }
-     }
-   }, [callStatus2, myVideo]);
 // To reset the video stream when constraints change
 useEffect(() => {
   if (myVideo && localVideoRef.current) {
@@ -308,124 +284,158 @@ useEffect(() => {
   }
 }, [myVideo, cons]);
 
-
-
   const getRemoteVideo = useCallback(()=>{
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
     }
   },[remoteStream]);
 
-  useEffect(()=>{
+  useEffect(() => {
     getRemoteVideo();
-  },[getRemoteVideo]);
 
-  useEffect(()=>{
-if(adminSocketStatus){
-  const wsMessage = {
-    admin:true,
-    cleanUserName: adminCon,
-    fullUserName:"updateMe",
-    cleanFriendName : "updateMe",
-    fullFiendName:"updateMe",
-  };
-  const adminMessageListener =async (event)=>{
-    const data = JSON.parse(event.data);
-    // if Someone Reset or Refresh or Firsttime going on link
-if(data.OnlyAvailable){
-  adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
-}
-
-    if(callStatus === "off"){
-  adminSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
-  adminSocket.close();
-  removeUserData();
-  navigate("/");
-    };
-
-
-    if(data.type === "off"){
-     cutCall.click();
-    }
-
-
- if (data.type === "userOn" || data.type === "askingOffer") {
-  const offer = await createOffer();
-  adminSocket.send(JSON.stringify({ ...wsMessage,type:"sendingOffer",content: offer}));
- };
-//  Getting Anser
- if (data.type === "sendingAnswer") {
-  await setRemoteAnswer(data.content);
- };
-
- //  neg Anser
- if (data.type === "negAnswer") {
-  await setRemoteAnswer(data.content);
-};
-      };
-      if(setting){
-        adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
+    // Cleanup function to stop the media tracks when the component unmounts
+    return () => {
+      if (remoteStream) {
+        remoteStream.getTracks().forEach(track => track.stop());
       }
-   // Listening for messages 
-   adminSocket.addEventListener("message", adminMessageListener);
-  return () => {
-    adminSocket.removeEventListener("message", adminMessageListener);
-  };
-
-};
-
-if(userSocketStatus && joined){
-  const wsMessage = {
-    admin:false,
-    cleanUserName: userName,
-    fullUserName:fullName,
-    cleanFriendName :adminCon,
-    fullFiendName:"updateMe",
-  };
-  const userMessageListener = async(event)=>{
-    const data = JSON.parse(event.data);
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = null;
+      }
+    };
+  }, [getRemoteVideo, remoteStream]);
 
 
-    if(data.OnlyAvailable){
-      userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
-    }
-    if(callStatus === "off"){
-      userSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
-      userSocket.close();
-      removeUserData();
-      navigate("/");
-        };
-        if(data.type === "off"){
-          cutCall.click();
+  useEffect(() => {
+    if (adminSocketStatus) {
+      const wsMessage = {
+        admin: true,
+        cleanUserName: adminCon,
+        fullUserName: "updateMe",
+        cleanFriendName: "updateMe",
+        fullFiendName: "updateMe",
+      };
+  
+      const adminMessageListener = async (event) => {
+        const data = JSON.parse(event.data);
+  
+        if (data.OnlyAvailable) {
+          adminSocket.send(JSON.stringify({ ...wsMessage, type: "adminOn" }));
         }
-    // If admin Reset or refresh
-    if (data.type === "adminOn") {
-    userSocket.send(JSON.stringify({ ...wsMessage,type:"askingOffer"}));
-     };
-
-     // If getting offer
-     if (data.type === "sendingOffer") {
-     
-      const answer = await createAnswer(data.content);
-      userSocket.send(JSON.stringify({ ...wsMessage,type:"sendingAnswer", content: answer}));
-       };
-
-         // If neg need
-      if (data.type === "negNeed") {
-      const answer = await createAnswer(data.content)
-      userSocket.send(JSON.stringify({ ...wsMessage,type:"negAnswer", content: answer}));
-       };
-            };
-if(!joined || setting){
-  userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
-}
-  userSocket.addEventListener("message", userMessageListener);
-return () => {
-  userSocket.removeEventListener("message", userMessageListener);
-};
-}
-  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer,setRemoteAnswer,callStatus,navigate,setting,cutCall]);
-
+  
+        if (callStatus === "off") {
+          adminSocket.send(JSON.stringify({ ...wsMessage, type: "off", content: null }));
+          adminSocket.close();
+          removeUserData();
+          navigate("/");
+        }
+  
+        if (data.type === "off") {
+          disconnect();
+          setCallStatus2(false);
+          adminSocket.close();
+          removeUserData();
+          navigate("/");
+        }
+  
+        if (data.type === "userOn" || data.type === "askingOffer") {
+          const offer = await createOffer();
+          adminSocket.send(JSON.stringify({ ...wsMessage, type: "sendingOffer", content: offer }));
+        }
+  
+        if (data.type === "sendingAnswer") {
+          await setRemoteAnswer(data.content);
+        }
+  
+        if (data.type === "negAnswer") {
+          await setRemoteAnswer(data.content);
+        }
+      };
+  
+      if (setting) {
+        adminSocket.send(JSON.stringify({ ...wsMessage, type: "adminOn" }));
+      }
+  
+      adminSocket.addEventListener("message", adminMessageListener);
+      return () => {
+        adminSocket.removeEventListener("message", adminMessageListener);
+        adminSocket.close();
+      };
+    }
+  
+    if (userSocketStatus && joined) {
+      const wsMessage = {
+        admin: false,
+        cleanUserName: userName,
+        fullUserName: fullName,
+        cleanFriendName: adminCon,
+        fullFiendName: "updateMe",
+      };
+  
+      const userMessageListener = async (event) => {
+        const data = JSON.parse(event.data);
+  
+        if (data.OnlyAvailable) {
+          userSocket.send(JSON.stringify({ ...wsMessage, type: "userOn" }));
+        }
+  
+        if (callStatus === "off") {
+          userSocket.send(JSON.stringify({ ...wsMessage, type: "off", content: null }));
+          userSocket.close();
+          removeUserData();
+          navigate("/");
+        }
+  
+        if (data.type === "off") {
+          disconnect();
+          userSocket.close();
+          removeUserData();
+          navigate("/");
+        }
+  
+        if (data.type === "adminOn") {
+          userSocket.send(JSON.stringify({ ...wsMessage, type: "askingOffer" }));
+        }
+  
+        if (data.type === "sendingOffer") {
+          const answer = await createAnswer(data.content);
+          userSocket.send(JSON.stringify({ ...wsMessage, type: "sendingAnswer", content: answer }));
+        }
+  
+        if (data.type === "negNeed") {
+          const answer = await createAnswer(data.content);
+          userSocket.send(JSON.stringify({ ...wsMessage, type: "negAnswer", content: answer }));
+        }
+      };
+  
+      if (!joined || setting) {
+        userSocket.send(JSON.stringify({ ...wsMessage, type: "userOn" }));
+      }
+  
+      userSocket.addEventListener("message", userMessageListener);
+      return () => {
+        userSocket.removeEventListener("message", userMessageListener);
+        userSocket.close();
+      };
+    }
+  }, [
+    adminSocketStatus,
+    userSocketStatus,
+    adminCon,
+    adminSocket,
+    userSocket,
+    userName,
+    joined,
+    fullName,
+    createAnswer,
+    createOffer,
+    setRemoteAnswer,
+    disconnect,
+    callStatus,
+    navigate,
+    setting,
+  ]);
+  
+ 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
     const wsMessage = {
@@ -479,7 +489,26 @@ return () => {
     }
   };
 
- 
+  const cutCall = async() => {
+   setCallStatus("off");
+   setCallStatus2(false);
+   setTimeout(() => {
+   disconnect();
+   removeUserData();
+   navigate("/");
+   }, 1000);
+  };
+
+  useEffect(() => {
+    if (!callStatus2 && myVideo) {
+      // Stop all media tracks
+      myVideo.getTracks().forEach(track => track.stop());
+      // Clear the video source
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = null;
+      }
+    }
+  }, [callStatus2, myVideo]);
 
   const handleMore = useCallback(async () => {
     window.location.reload();
@@ -503,7 +532,7 @@ return () => {
               playsInline
               className="absolute right-3 top-3 rounded-md  object-cover h-24 w-16 ring-1 ring-black"
             ></video>
-            <button onClick={checkRemoteVideoPlaying} className="absolute z-20 flex items-center justify-center text-center bg-blf h-14 w-14 rounded-full text-white p-1.5 right-4 bottom-24"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 flex items-center text-center justify-center">
+            <button onClick={handleUserJoin} className="absolute z-20 flex items-center justify-center text-center bg-blf h-14 w-14 rounded-full text-white p-1.5 right-4 bottom-24"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 flex items-center text-center justify-center">
   <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
 </svg></button>
 
