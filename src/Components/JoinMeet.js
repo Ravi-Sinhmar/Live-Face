@@ -98,9 +98,11 @@ const removeUserData = () => {
     const videoElement = remoteVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setIsRemoteVideoPlaying(true);
+      console.log(" Remote Video Playing");
       
     } else {
       setIsRemoteVideoPlaying(false);
+      console.log(" Remote Video is  not playing");
       
     }
   };
@@ -109,9 +111,11 @@ const removeUserData = () => {
     const videoElement = localVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setMyIsVideoPlaying(true);
+      console.log(" My Video Playing");
       
     } else {
       setMyIsVideoPlaying(false);
+      console.log(" My Video is not playing");
      
     }
   };
@@ -125,20 +129,7 @@ const removeUserData = () => {
     };
   }, []);
 
-useEffect(()=>{
-  if(isMyVideoPlaying && isRemoteVideoPlaying){
-    console.log("Both Videos Playing");
-  }else if(isMyVideoPlaying){
-    console.log("Only My Video Playing");
 
-  }else if(isRemoteVideoPlaying){
-    console.log("Only Remote Video Playing");
-
-  }
-  else{
-    console.log("No Video is Playing");
-  }
-},[isMyVideoPlaying,isRemoteVideoPlaying]);
 
 
   const seeMeet = useCallback(() => {
