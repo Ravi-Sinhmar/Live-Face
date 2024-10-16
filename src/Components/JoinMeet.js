@@ -185,6 +185,7 @@ if(data.token){
 const startAdminSocket = useCallback(() => {
       if (needWebSocket && admin) {
         const cleanName = userName.toLowerCase().replace(/\s+/g, "");
+        console.log("admin ws");
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.ad`
         );
@@ -194,6 +195,8 @@ const startAdminSocket = useCallback(() => {
 
   const startUserSocket = useCallback(() => {
     if (needWebSocket && user && joined) {
+      console.log("admin ws");
+
         const cleanName = userName.toLowerCase().replace(/\s+/g, "");
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.us`
