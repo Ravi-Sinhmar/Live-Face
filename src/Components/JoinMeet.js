@@ -31,7 +31,8 @@ function JoinMeet() {
   const [socketStatus, setSocketStatus] = useState(false);
   const [callStatus2, setCallStatus2] = useState(true);
   const [showSetting, setShowSetting] = useState(true);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
+  const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
 
   
   // contexts
@@ -93,21 +94,48 @@ const removeUserData = () => {
     loopWithDelay();  // Start the loop
   }, []);
 
-  
-
-  
-
-  const checkVideoPlaying = () => {
+  const checkRemoteVideoPlaying = () => {
     const videoElement = remoteVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
-      setIsVideoPlaying(true);
-      console.log("Video is Playing");
+      setIsRemoteVideoPlaying(true);
+      console.log("Remote Video :true");
     } else {
-      setIsVideoPlaying(false);
-      console.log("Video is Not");
-
+      setIsRemoteVideoPlaying(false);
+      console.log("Remote Vidoe: False");
     }
   };
+
+  const checkMyVideoPlaying = () => {
+    const videoElement = localVideoRef.current;
+    if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
+      setMyIsVideoPlaying(true);
+      console.log("My Video: true");
+    } else {
+      setMyIsVideoPlaying(false);
+      console.log("My Video: false");
+    }
+  };
+
+
+  useEffect(()=>{
+    checkMyVideoPlaying();
+    checkRemoteVideoPlaying();
+  },[]);
+
+useEffect(()=>{
+  if(isMyVideoPlaying && isRemoteVideoPlaying){
+    console.log("Both Videos Playing");
+  }else if(isMyVideoPlaying){
+    console.log("Only My Video Playing");
+
+  }else if(isRemoteVideoPlaying){
+    console.log("Only Remote Video Playing");
+
+  }
+  else{
+    console.log("No Video is Playing");
+  }
+},[isMyVideoPlaying,isRemoteVideoPlaying]);
 
 
   const seeMeet = useCallback(() => {
