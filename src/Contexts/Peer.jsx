@@ -33,7 +33,7 @@ function PeerProvider(props) {
       setRemoteStream(null);
       setReConnect(false);
     }
-  }, [ReConnect,peer]);
+  }, [ReConnect]);
 
   const createOffer = async () => {
     const offer = await peer.createOffer();

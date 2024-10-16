@@ -43,17 +43,13 @@ const saveMeet = useCallback(()=>{
 if(data.status === 'success'){
   const cleanName = adminName.toLowerCase().replace(/\s+/g, "");
   setSmallLink(`/meeting?adminName=${cleanName}&meetingId=${meetId}`)
- setIsLink(`https://live-face.vercel.app/meeting?adminName=${cleanName}&meetingId=${meetId}`);
+  setIsLink(`https://live-face.vercel.app/meeting?adminName=${cleanName}&meetingId=${meetId}`);
  setIsLoading(false)
 }
     }).catch(err=>{
       console.log(err);
     });
 },[adminName]);
-
-
-
- 
 
   const copyToClipboard = () => {
     linkRef.current.select();
