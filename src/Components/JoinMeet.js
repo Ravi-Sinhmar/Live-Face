@@ -44,10 +44,11 @@ function JoinMeet() {
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,disconnect
+    remoteStream,disconnect,setReConnect,ReConnect
   } = usePeer();
 
   const handleContinue = () => {
+    setReConnect(true);
     setSetting(true);
     setShowSetting(false);
     console.log("Constraints:", cons);
@@ -148,7 +149,7 @@ const removeUserData = () => {
     if(id === mId){
       setAdminCon(name);
     };
-    if (adminCon && meetingId) {
+    if (adminCon && meetingId && ReConnect) {
       
 
       const content = { adminName:adminCon, meetingId:meetingId };
