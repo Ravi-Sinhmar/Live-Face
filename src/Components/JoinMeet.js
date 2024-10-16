@@ -470,14 +470,14 @@ return () => {
                   >
                     <path
                       d="M9.40135 12.5C9.63354 12.9014 9.95606 13.244 10.3411 13.5M9.17071 4C9.58254 2.83481 10.6938 2 12 2C13.6569 2 15 3.34315 15 5L15 10.5"
-                      stroke="#333333"
+                      stroke={!isMicEnabled ? "#FBFBFC" : "#444752"}
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
                     />
                     <path
                       d="M6 11C6 14.3137 8.68629 17 12 17C12.4675 17 12.9225 16.9465 13.3592 16.8454M18 11C18 11.854 17.8216 12.6663 17.5 13.4017"
-                      stroke="#333333"
+                      stroke={!isMicEnabled ? "#FBFBFC" : "#444752"}
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -487,7 +487,7 @@ return () => {
                       y1="18"
                       x2="12"
                       y2="20"
-                      stroke="#333333"
+                      stroke={!isMicEnabled ? "#FBFBFC" : "#444752"}
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -497,7 +497,7 @@ return () => {
                       y1="21"
                       x2="14"
                       y2="21"
-                      stroke="#333333"
+                      stroke={!isMicEnabled ? "#FBFBFC" : "#444752"}
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -507,7 +507,7 @@ return () => {
                       y1="2.03821"
                       x2="19.0382"
                       y2="19.5863"
-                      stroke="#333333"
+                      stroke={!isMicEnabled ? "#FBFBFC" : "#444752"}
                       stroke-width="2"
                       stroke-linecap="round"
                     />
