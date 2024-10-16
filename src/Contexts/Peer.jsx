@@ -83,7 +83,7 @@ function PeerProvider(props) {
   }, [peer]);
 
   return (
-    <PeerContext.Provider value={{ peer, disconnect, createOffer, createAnswer, setRemoteAnswer, sendVideo, remoteStream, setReConnect }}>
+    <PeerContext.Provider value={{ peer, disconnect, createOffer, createAnswer, setRemoteAnswer, sendVideo, remoteStream, setReConnect , ReConnect }}>
       {props.children}
     </PeerContext.Provider>
   );
