@@ -98,10 +98,10 @@ const removeUserData = () => {
     const videoElement = remoteVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setIsRemoteVideoPlaying(true);
-      console.log("Remote Video :true");
+      
     } else {
       setIsRemoteVideoPlaying(false);
-      console.log("Remote Vidoe: False");
+      
     }
   };
 
@@ -109,10 +109,10 @@ const removeUserData = () => {
     const videoElement = localVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setMyIsVideoPlaying(true);
-      console.log("My Video: true");
+      
     } else {
       setMyIsVideoPlaying(false);
-      console.log("My Video: false");
+     
     }
   };
 
