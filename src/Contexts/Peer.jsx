@@ -33,7 +33,7 @@ function PeerProvider(props) {
       setRemoteStream(null);
       setReConnect(false);
     }
-  }, [ReConnect]);
+  }, [ReConnect,peer]);
 
   const createOffer = async () => {
     const offer = await peer.createOffer();
@@ -83,7 +83,7 @@ function PeerProvider(props) {
   }, [peer]);
 
   return (
-    <PeerContext.Provider value={{ peer, disconnect, createOffer, createAnswer, setRemoteAnswer, sendVideo, remoteStream, setReConnect , ReConnect }}>
+    <PeerContext.Provider value={{ peer, disconnect, createOffer, createAnswer, setRemoteAnswer, sendVideo, remoteStream, setReConnect }}>
       {props.children}
     </PeerContext.Provider>
   );

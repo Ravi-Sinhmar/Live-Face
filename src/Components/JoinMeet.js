@@ -44,11 +44,11 @@ function JoinMeet() {
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,disconnect,setReConnect,ReConnect
+    remoteStream,disconnect,
   } = usePeer();
 
   const handleContinue = () => {
-    setReConnect(true);
+   
     setSetting(true);
     setShowSetting(false);
     console.log("Constraints:", cons);
@@ -149,7 +149,7 @@ const removeUserData = () => {
     if(id === mId){
       setAdminCon(name);
     };
-    if (adminCon && meetingId && ReConnect) {
+    if (adminCon && meetingId) {
       
 
       const content = { adminName:adminCon, meetingId:meetingId };
@@ -178,7 +178,7 @@ if(data.token){
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,meetingId,adminCon,setAdminCon,ReConnect]);
+  }, [searchParams,meetingId,adminCon,setAdminCon]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
