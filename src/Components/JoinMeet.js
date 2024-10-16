@@ -262,10 +262,19 @@ const startAdminSocket = useCallback(() => {
 
 
   useEffect(() => {
-    if(setting){
-      getMyVideo();
-    }
-  }, [getMyVideo,setting]);
+    getMyVideo();
+
+    // Cleanup function to stop the media tracks when the component unmounts
+    return () => {
+      if (myVideo) {
+        myVideo.getTracks().forEach(track => track.stop());
+      }
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = null;
+      }
+    };
+  }, [getMyVideo,myVideo]);
+
 
 
 // To reset the video stream when constraints change
