@@ -327,7 +327,7 @@ if(userSocketStatus && joined){
 
      // If getting offer
      if (data.type === "sendingOffer") {
-      alert("got sendingOffer");
+     
       const answer = await createAnswer(data.content);
       userSocket.send(JSON.stringify({ ...wsMessage,type:"sendingAnswer", content: answer}));
        };
