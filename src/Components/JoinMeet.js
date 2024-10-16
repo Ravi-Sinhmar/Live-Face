@@ -266,15 +266,15 @@ const startAdminSocket = useCallback(() => {
     getMyVideo();
 
     // Cleanup function to stop the media tracks when the component unmounts
-    return () => {
-      if (myVideo) {
-        myVideo.getTracks().forEach(track => track.stop());
-      }
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = null;
-      }
-    };
-  }, [getMyVideo, myVideo]);
+    // return () => {
+    //   if (myVideo) {
+    //     myVideo.getTracks().forEach(track => track.stop());
+    //   }
+    //   if (localVideoRef.current) {
+    //     localVideoRef.current.srcObject = null;
+    //   }
+    // };
+  }, [getMyVideo]);
 
 
 // To reset the video stream when constraints change
@@ -294,15 +294,15 @@ useEffect(() => {
     getRemoteVideo();
 
     // Cleanup function to stop the media tracks when the component unmounts
-    return () => {
-      if (remoteStream) {
-        remoteStream.getTracks().forEach(track => track.stop());
-      }
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = null;
-      }
-    };
-  }, [getRemoteVideo, remoteStream]);
+    // return () => {
+    //   if (remoteStream) {
+    //     remoteStream.getTracks().forEach(track => track.stop());
+    //   }
+    //   if (remoteVideoRef.current) {
+    //     remoteVideoRef.current.srcObject = null;
+    //   }
+    // };
+  }, [getRemoteVideo]);
 
 
   useEffect(() => {
