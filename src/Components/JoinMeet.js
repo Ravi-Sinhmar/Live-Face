@@ -116,11 +116,14 @@ const removeUserData = () => {
     }
   };
 
-
-  useEffect(()=>{
-    checkMyVideoPlaying();
-    checkRemoteVideoPlaying();
-  });
+  useEffect(() => {
+    const interval1 = setInterval(checkMyVideoPlaying, 1000); // Check every second
+    const interval2 = setInterval(checkRemoteVideoPlaying, 1000); // Run otherFunction every second
+    return () => {
+      clearInterval(interval1);
+      clearInterval(interval2);
+    };
+  }, []);
 
 useEffect(()=>{
   if(isMyVideoPlaying && isRemoteVideoPlaying){
