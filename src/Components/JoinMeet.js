@@ -319,7 +319,7 @@ if(adminSocketStatus){
     }
 
 
- if (data.type === "userOn" || data.type === "askingOffer") {
+ if (data.type === "userOn" || data.type === "askngOffer") {
   const offer = await createOffer();
   adminSocket.send(JSON.stringify({ ...wsMessage,type:"sendingOffer",content: offer}));
  };
@@ -329,9 +329,9 @@ if(adminSocketStatus){
  };
 
  //  neg Anser
- if (data.type === "negAnswer") {
-  await setRemoteAnswer(data.content);
-};
+//  if (data.type === "negAnswer") {
+//   await setRemoteAnswer(data.content);
+// };
       };
       if(setting){
         adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
@@ -377,16 +377,15 @@ if(userSocketStatus && joined){
 
      // If getting offer
      if (data.type === "sendingOffer") {
-     
       const answer = await createAnswer(data.content);
       userSocket.send(JSON.stringify({ ...wsMessage,type:"sendingAnswer", content: answer}));
        };
 
          // If neg need
-      if (data.type === "negNeed") {
-      const answer = await createAnswer(data.content)
-      userSocket.send(JSON.stringify({ ...wsMessage,type:"negAnswer", content: answer}));
-       };
+      // if (data.type === "negNeed") {
+      // const answer = await createAnswer(data.content)
+      // userSocket.send(JSON.stringify({ ...wsMessage,type:"negAnswer", content: answer}));
+      //  };
             };
 if(!joined || setting){
   userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
@@ -400,16 +399,16 @@ return () => {
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
-    const wsMessage = {
-      admin:true,
-      cleanUserName: adminCon,
-      fullUserName:"updateMe",
-      cleanFriendName : "updateMe",
-      fullFiendName:"updateMe",
-    };
-    const offer = await createOffer();
-    adminSocket.send(JSON.stringify({ ...wsMessage,type:"negNeed",content: offer}));
-  }, [adminCon,adminSocket,createOffer]);
+    // const wsMessage = {
+    //   admin:true,
+    //   cleanUserName: adminCon,
+    //   fullUserName:"updateMe",
+    //   cleanFriendName : "updateMe",
+    //   fullFiendName:"updateMe",
+    // };
+    // const offer = await createOffer();
+    // adminSocket.send(JSON.stringify({ ...wsMessage,type:"negNeed",content: offer}));
+  }, []);
 
   useEffect(() => {
     peer.addEventListener("negotiationneeded", handleNeg);
