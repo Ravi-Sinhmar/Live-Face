@@ -303,17 +303,17 @@ if(adminSocketStatus){
 
 
     if(callStatus === "off"){
-  adminSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
-  adminSocket.close();
+  await adminSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
+ await adminSocket.close();
   removeUserData();
   navigate("/");
     };
 
 
     if(data.type === "off"){
-      disconnect();
+    await  disconnect();
       setCallStatus2(false);
-  adminSocket.close();
+ await adminSocket.close();
   removeUserData();
       navigate("/");
     }
@@ -321,17 +321,17 @@ if(adminSocketStatus){
 
  if (data.type === "userOn" || data.type === "askngOffer") {
   const offer = await createOffer();
-  adminSocket.send(JSON.stringify({ ...wsMessage,type:"sendingOffer",content: offer}));
+ await adminSocket.send(JSON.stringify({ ...wsMessage,type:"sendingOffer",content: offer}));
  };
 //  Getting Anser
  if (data.type === "sendingAnswer") {
   await setRemoteAnswer(data.content);
  };
 
- //  neg Anser
-//  if (data.type === "negAnswer") {
-//   await setRemoteAnswer(data.content);
-// };
+//   neg Anser
+ if (data.type === "negAnswer") {
+  await setRemoteAnswer(data.content);
+};
       };
       if(setting){
         adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
@@ -358,34 +358,35 @@ if(userSocketStatus && joined){
 
   
     if(callStatus === "off"){
-      userSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
-      userSocket.close();
+    await  userSocket.send(JSON.stringify({ ...wsMessage,type:"off",content: null}));
+    await  userSocket.close();
       removeUserData();
 
       navigate("/");
         };
         if(data.type === "off"){
-          disconnect();
-          userSocket.close();
+       await   disconnect();
+        await  userSocket.close();
           removeUserData();
           navigate("/");
         }
     // If admin Reset or refresh
     if (data.type === "adminOn") {
-    userSocket.send(JSON.stringify({ ...wsMessage,type:"askingOffer"}));
+  await  userSocket.send(JSON.stringify({ ...wsMessage,type:"askingOffer"}));
      };
 
      // If getting offer
      if (data.type === "sendingOffer") {
       const answer = await createAnswer(data.content);
-      userSocket.send(JSON.stringify({ ...wsMessage,type:"sendingAnswer", content: answer}));
+    await userSocket.send(JSON.stringify({ ...wsMessage,type:"sendingAnswer", content: answer}));
        };
 
          // If neg need
-      // if (data.type === "negNeed") {
-      // const answer = await createAnswer(data.content)
-      // userSocket.send(JSON.stringify({ ...wsMessage,type:"negAnswer", content: answer}));
-      //  };
+      if (data.type === "negNeed") {
+        console.log("Got neg Need and now sending neg answer");
+      const answer = await createAnswer(data.content)
+    await userSocket.send(JSON.stringify({ ...wsMessage,type:"negAnswer", content: answer}));
+       };
             };
 if(!joined || setting){
   userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
@@ -399,16 +400,16 @@ return () => {
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
-    // const wsMessage = {
-    //   admin:true,
-    //   cleanUserName: adminCon,
-    //   fullUserName:"updateMe",
-    //   cleanFriendName : "updateMe",
-    //   fullFiendName:"updateMe",
-    // };
-    // const offer = await createOffer();
-    // adminSocket.send(JSON.stringify({ ...wsMessage,type:"negNeed",content: offer}));
-  }, []);
+    const wsMessage = {
+      admin:true,
+      cleanUserName: adminCon,
+      fullUserName:"updateMe",
+      cleanFriendName : "updateMe",
+      fullFiendName:"updateMe",
+    };
+    const offer = await createOffer();
+   await adminSocket.send(JSON.stringify({ ...wsMessage,type:"negNeed",content: offer}));
+  }, [adminSocket,createOffer,adminCon]);
 
   useEffect(() => {
     peer.addEventListener("negotiationneeded", handleNeg);
