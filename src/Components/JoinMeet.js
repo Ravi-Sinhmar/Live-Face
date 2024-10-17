@@ -34,6 +34,7 @@ function JoinMeet() {
   const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
   const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
   const [isBothVideo , setIsBothVideo] = useState(0);
+  const [times , setTimes] = useState(0);
 
   
   // contexts
@@ -333,8 +334,9 @@ if(adminSocketStatus){
   await setRemoteAnswer(data.content);
 };
       };
-      if(setting){
+      if(setting && times === 0 ){
         adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
+        setTimes(1);
       }
    // Listening for messages 
    adminSocket.addEventListener("message", adminMessageListener);
@@ -396,7 +398,7 @@ return () => {
   userSocket.removeEventListener("message", userMessageListener);
 };
 }
-  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,userSocket,userName,joined,fullName,createAnswer,createOffer,setRemoteAnswer,disconnect,callStatus,navigate,setting]);
+  },[adminSocketStatus,userSocketStatus,adminCon,adminSocket,times,userSocket,userName,joined,fullName,createAnswer,createOffer,setRemoteAnswer,disconnect,callStatus,navigate,setting]);
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
