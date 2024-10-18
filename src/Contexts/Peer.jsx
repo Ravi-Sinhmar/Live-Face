@@ -57,10 +57,6 @@ function PeerProvider(props) {
   useEffect(() => {
     const peer = initializePeer();
     setPeer(peer);
-    return () => {
-      peer.close();
-      setPeer(null);
-    };
   }, []);
 
   const createOffer = async () => {
