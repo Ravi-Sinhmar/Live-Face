@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactPlayer from "react-player";
 import { useSearchParams } from "react-router-dom";
-import Loader from "./Loader";
 import { useFriend } from "./../Contexts/Friend";
 import { usePeer } from "./../Contexts/Peer";
 import { useNavigate } from "react-router-dom";
@@ -35,8 +34,6 @@ function JoinMeet() {
   const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
   const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
   const [isBothVideo , setIsBothVideo] = useState(0);
-  const [times , setTimes] = useState(0);
-  const [isLoading , setIsLoading] = useState(false);
 
   
   // contexts
@@ -79,7 +76,6 @@ const removeUserData = () => {
 
 
   const handleUserJoin = useCallback(() => {
-    setIsLoading(true);
     let tries = 0;  // Initialize your tries counter here
     console.log(tries)
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -93,7 +89,7 @@ const removeUserData = () => {
         tries++;  // Increment tries
         await delay(500);  // Wait for 500ms
       }
-    
+      setJoined(true);
     };
   
     loopWithDelay();  // Start the loop
@@ -103,13 +99,13 @@ const removeUserData = () => {
     const videoElement = remoteVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setIsRemoteVideoPlaying(true);
-      setTimes(prev => prev + 1);
       setIsBothVideo(prev => prev + 1);
 
     } else {
       setIsRemoteVideoPlaying(false);
       setIsBothVideo(0);
     
+
     }
   },[]) 
 
@@ -117,7 +113,6 @@ const removeUserData = () => {
     const videoElement = localVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setMyIsVideoPlaying(true);
-      setTimes(prev => prev + 1);
       setIsBothVideo(prev => prev + 1);
       
     } else {
@@ -129,7 +124,7 @@ const removeUserData = () => {
   useEffect(() => {
     const interval1 = setInterval(checkMyVideoPlaying, 1000); // Check every second
     const interval2 = setInterval(checkRemoteVideoPlaying, 1000); // Run otherFunction every second
-    if (isBothVideo >= 4) {
+    if (isBothVideo >= 20) {
       clearInterval(interval1);
       clearInterval(interval2);
     }
@@ -140,16 +135,9 @@ const removeUserData = () => {
   }, [isBothVideo,checkRemoteVideoPlaying]);
 
 
-useEffect(()=>{
-  if(isBothVideo >= 4){
-    setJoined(true);
-    setTimes(0);
-    setIsLoading(false);
-  }else if(times >= 15){
-setIsLoading(false);
-window.location.reload();
-  }
-},[isBothVideo,setSetting,times]);
+
+
+
 
   const seeMeet = useCallback(() => {
     const ad = searchParams.get("adminName");
@@ -487,14 +475,14 @@ return () => {
   const handleMore = useCallback(async () => {
     window.location.reload();
     setJoined(false);
-     setSetting(true)
+     setSetting(false)
   }, [setSetting]);
 
   // JSX Code
 
   return (
     <React.Fragment>
-{ isLoading ? <Loader className="bg-blf">If it doesn't connect then please try again</Loader> : null}
+
      {showSetting ? (
         <Connecting  onContinue={handleContinue} />
       ):
