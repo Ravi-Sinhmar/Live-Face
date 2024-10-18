@@ -129,7 +129,7 @@ const removeUserData = () => {
   useEffect(() => {
     const interval1 = setInterval(checkMyVideoPlaying, 1000); // Check every second
     const interval2 = setInterval(checkRemoteVideoPlaying, 1000); // Run otherFunction every second
-    if (isBothVideo >= 20) {
+    if (isBothVideo >= 4) {
       clearInterval(interval1);
       clearInterval(interval2);
     }
@@ -141,13 +141,13 @@ const removeUserData = () => {
 
 
 useEffect(()=>{
-  if(isBothVideo >= 20){
+  if(isBothVideo >= 4){
     setJoined(true);
     setTimes(0);
     setIsLoading(false);
-  }else if(times >=25){
+  }else if(times >= 15){
 setIsLoading(false);
-setSetting(false);
+window.location.reload();
   }
 },[isBothVideo,setSetting,times]);
 
