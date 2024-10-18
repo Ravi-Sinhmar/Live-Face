@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactPlayer from "react-player";
 import { useSearchParams } from "react-router-dom";
+import Loader from "./Loader";
 import { useFriend } from "./../Contexts/Friend";
 import { usePeer } from "./../Contexts/Peer";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +35,7 @@ function JoinMeet() {
   const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
   const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
   const [isBothVideo , setIsBothVideo] = useState(0);
+  const [isLoading , setIsLoading] = useState(false);
 
   
   // contexts
@@ -50,6 +52,7 @@ function JoinMeet() {
   const handleContinue = () => {
     setSetting(true);
     setShowSetting(false);
+    setIsLoading(true);
     console.log("Constraints:", cons);
     // Proceed with using cons
   };
@@ -89,7 +92,7 @@ const removeUserData = () => {
         tries++;  // Increment tries
         await delay(500);  // Wait for 500ms
       }
-      setJoined(true);
+    
     };
   
     loopWithDelay();  // Start the loop
@@ -137,12 +140,10 @@ const removeUserData = () => {
 
 useEffect(()=>{
   if(isBothVideo >= 20){
-    alert("Fully Connected");
-    console.log("Fully Connected");
+    setJoined(true);
+    setIsLoading(false);
   }
 },[isBothVideo]);
-
-
 
   const seeMeet = useCallback(() => {
     const ad = searchParams.get("adminName");
@@ -491,6 +492,7 @@ return () => {
 
   return (
     <React.Fragment>
+{ isLoading ? <Loader className="bg-blf">If it doesn't connect then please try again</Loader> : null}
      {showSetting ? (
         <Connecting  onContinue={handleContinue} />
       ):
