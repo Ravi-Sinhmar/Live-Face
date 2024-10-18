@@ -3,7 +3,7 @@ import React from "react";
 function Loader(props) {
   return (
 
-    <div className="w-screen h-svh z-10 gap-4  flex-col bg-black fixed opacity-80 flex justify-center items-center">
+    <div className="w-screen h-svh z-20 gap-4  flex-col bg-black fixed opacity-80 flex justify-center items-center">
       <svg className="w-10 h-10" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
         <radialGradient
           id="a4"

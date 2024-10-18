@@ -35,6 +35,7 @@ function JoinMeet() {
   const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
   const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
   const [isBothVideo , setIsBothVideo] = useState(0);
+  const [times , setTimes] = useState(0);
   const [isLoading , setIsLoading] = useState(false);
 
   
@@ -102,6 +103,7 @@ const removeUserData = () => {
     const videoElement = remoteVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setIsRemoteVideoPlaying(true);
+      setTimes(prev => prev + 1);
       setIsBothVideo(prev => prev + 1);
 
     } else {
@@ -115,6 +117,7 @@ const removeUserData = () => {
     const videoElement = localVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setMyIsVideoPlaying(true);
+      setTimes(prev => prev + 1);
       setIsBothVideo(prev => prev + 1);
       
     } else {
@@ -140,9 +143,13 @@ const removeUserData = () => {
 useEffect(()=>{
   if(isBothVideo >= 20){
     setJoined(true);
+    setTimes(0);
     setIsLoading(false);
+  }else if(times >=25){
+setIsLoading(false);
+setSetting(false);
   }
-},[isBothVideo]);
+},[isBothVideo,setSetting,times]);
 
   const seeMeet = useCallback(() => {
     const ad = searchParams.get("adminName");
