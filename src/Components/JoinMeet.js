@@ -390,7 +390,7 @@ if(userSocketStatus && joined){
     await userSocket.send(JSON.stringify({ ...wsMessage,type:"negAnswer", content: answer}));
        };
             };
-if(!joined || setting){
+if(!joined && setting){
   userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
 }
   userSocket.addEventListener("message", userMessageListener);
