@@ -34,6 +34,7 @@ function JoinMeet() {
   const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
   const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
   const [isBothVideo , setIsBothVideo] = useState(0);
+  const [handShake , setHandShake] = useState(false);
 
   
   // contexts
@@ -48,7 +49,6 @@ function JoinMeet() {
   } = usePeer();
 
   const handleContinue = () => {
-    setSetting(true);
     setShowSetting(false);
     console.log("Constraints:", cons);
     // Proceed with using cons
@@ -89,23 +89,20 @@ const removeUserData = () => {
         tries++;  // Increment tries
         await delay(500);  // Wait for 500ms
       }
-      setJoined(true);
+      setSetting(true);
     };
   
     loopWithDelay();  // Start the loop
-  }, []);
+  }, [setSetting]);
 
   const checkRemoteVideoPlaying =useCallback(() => {
     const videoElement = remoteVideoRef.current;
     if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
       setIsRemoteVideoPlaying(true);
       setIsBothVideo(prev => prev + 1);
-
     } else {
       setIsRemoteVideoPlaying(false);
       setIsBothVideo(0);
-    
-
     }
   },[]) 
 
@@ -127,6 +124,7 @@ const removeUserData = () => {
     if (isBothVideo >= 20) {
       clearInterval(interval1);
       clearInterval(interval2);
+      alert("Fully Connected");
     }
     return () => {
       clearInterval(interval1);
@@ -333,8 +331,9 @@ if(adminSocketStatus){
   await setRemoteAnswer(data.content);
 };
       };
-      if(setting){
+      if(setting && !handShake){
         adminSocket.send(JSON.stringify({ ...wsMessage,type:"adminOn"}));
+        setHandShake(true);
       }
    // Listening for messages 
    adminSocket.addEventListener("message", adminMessageListener);
@@ -388,8 +387,9 @@ if(userSocketStatus && joined){
       userSocket.send(JSON.stringify({ ...wsMessage,type:"negAnswer", content: answer}));
        };
             };
-if(!joined || setting){
+            if(setting && !handShake){
   userSocket.send(JSON.stringify({ ...wsMessage,type:"userOn"}));
+  setHandShake(true);
 }
   userSocket.addEventListener("message", userMessageListener);
 return () => {
