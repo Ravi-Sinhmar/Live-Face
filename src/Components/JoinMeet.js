@@ -401,6 +401,7 @@ return () => {
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
+    alert("neg");
     const wsMessage = {
       admin:true,
       cleanUserName: adminCon,
