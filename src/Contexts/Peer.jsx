@@ -11,7 +11,10 @@ function PeerProvider(props){
       new RTCPeerConnection({
         iceServers: [
           {
-              urls: 'stun:stun.l.google.com:19302'
+            urls: [
+              "stun:stun.l.google.com:19302",
+              "stun:global.stun.twilio.com:3478",
+            ],
           }
       ],
       }),
@@ -27,7 +30,7 @@ function PeerProvider(props){
 
   const createAnswer  = async (offer)=>{
   console.log("state of wbeb setremote offer",peer.connectionState);
-    peer.setRemoteDescription(offer);
+   await peer.setRemoteDescription(offer);
 const answer = await peer.createAnswer();
 await peer.setLocalDescription(answer);
 return answer;
