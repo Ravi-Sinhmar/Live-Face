@@ -487,7 +487,7 @@ return () => {
   const handleMore = useCallback(async () => {
     window.location.reload();
     setJoined(false);
-     setSetting(false)
+     setSetting(true)
   }, [setSetting]);
 
   // JSX Code
