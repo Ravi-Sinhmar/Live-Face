@@ -49,6 +49,7 @@ function JoinMeet() {
   } = usePeer();
 
   const handleContinue = () => {
+    setSetting(true);
     setShowSetting(false);
     console.log("Constraints:", cons);
     // Proceed with using cons
@@ -89,11 +90,11 @@ const removeUserData = () => {
         tries++;  // Increment tries
         await delay(500);  // Wait for 500ms
       }
-      setSetting(true);
+     setJoined(true);
     };
   
     loopWithDelay();  // Start the loop
-  }, [setSetting]);
+  }, []);
 
   const checkRemoteVideoPlaying =useCallback(() => {
     const videoElement = remoteVideoRef.current;
