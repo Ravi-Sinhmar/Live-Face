@@ -20,7 +20,7 @@ function PeerProvider(props){
 
   // create offer
   const createOffer = async()=>{
-    const offer = peer.createOffer();
+    const offer = await peer.createOffer();
     await peer.setLocalDescription(offer);
     return offer;
   };
