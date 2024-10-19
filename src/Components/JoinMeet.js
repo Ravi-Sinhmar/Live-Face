@@ -77,23 +77,7 @@ const removeUserData = () => {
 
 
   const handleUserJoin = useCallback(() => {
-    let tries = 0;  // Initialize your tries counter here
-    console.log(tries)
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-  
-    const loopWithDelay = async () => {
-      while (tries < 4) {
-        let uName = "A";
-        setFullName(uName);
-        uName = uName.toLowerCase().replace(/\s+/g, "");
-        setUserName(uName);
-        tries++;  // Increment tries
-        await delay(500);  // Wait for 500ms
-      }
-     setJoined(true);
-    };
-  
-    loopWithDelay();  // Start the loop
+    setJoined(true);
   }, []);
 
   const checkRemoteVideoPlaying =useCallback(() => {
