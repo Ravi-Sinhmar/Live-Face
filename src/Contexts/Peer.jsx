@@ -50,7 +50,6 @@ const sendVideo = async (video)=>{
   for(const track of tracks){
     peer.addTrack(track,video);
   }
-
 }
 
 const handleSendVideo = useCallback(async(event)=>{

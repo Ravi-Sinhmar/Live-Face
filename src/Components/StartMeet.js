@@ -3,7 +3,9 @@ import { useFriend } from "./../Contexts/Friend";
 import Loader from "./Loader";
 import { useNavigate } from 'react-router-dom';
 import { RandomString } from "../JavaScriptFun/RandomString";
+import { useSocket } from "./../Contexts/Socket"
 function StartMeet() {
+ const socket = useSocket();
  const [isClick, setIsClick] = useState(false);
  const [adminName, setAdminName] = useState('');
  const [isLoading,setIsLoading] = useState(false);
@@ -18,7 +20,8 @@ function StartMeet() {
 const startMeet = useCallback(()=>{
   console.log("StartMeet Click");
   setIsClick(true);
-},[]);
+  socket.emit("room:join", {msg:"Hi"});
+},[socket]);
 
 const handleInputChange = (event) => {
   setAdminName(event.target.value);
@@ -31,7 +34,7 @@ const saveMeet = useCallback(()=>{
   const meetId = RandomString(6);
     console.log("fetch request sent",adminName,meetId);
     const content = {adminName:adminName,meetingId:meetId}
-    fetch(`https://facesyncbackend.onrender.com/saveMeet`, {
+    fetch(`http://localhost:5000/saveMeet`, {
       method: "POST",
       credentials: 'include',
       headers: {
@@ -54,6 +57,7 @@ if(data.status === 'success'){
 const copyToClipboard = async () => {
   try {
     await navigator.clipboard.writeText(linkRef.current.value);
+    socket.emit("join-user", adminName);
     navigate(smallLink); // Replace with your actual route
   } catch (err) {
     console.error('Failed to copy: ', err);
