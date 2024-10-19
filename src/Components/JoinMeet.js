@@ -6,7 +6,7 @@ import { usePeer } from "./../Contexts/Peer";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "./../Contexts/Socket"
 import Connecting from "./Connecting";
-import { off } from "../../../Backend/Models/meets";
+
 
 function JoinMeet() {
   const socket = useSocket();
