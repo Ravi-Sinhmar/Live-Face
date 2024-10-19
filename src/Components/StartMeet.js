@@ -34,7 +34,7 @@ const saveMeet = useCallback(()=>{
   const meetId = RandomString(6);
     console.log("fetch request sent",adminName,meetId);
     const content = {adminName:adminName,meetingId:meetId}
-    fetch(`http://localhost:5000/saveMeet`, {
+    fetch(`https://facesyncbackend.onrender.com/saveMeet`, {
       method: "POST",
       credentials: 'include',
       headers: {

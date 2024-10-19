@@ -9,7 +9,7 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = (props) => {
-  const socket = useMemo(() => io("https://live-face.vercel.app"), []);
+  const socket = useMemo(() => io("https://facesyncbackend.onrender.com"), []);
 
   
 
