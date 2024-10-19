@@ -6,6 +6,7 @@ export const usePeer = () =>{
 
 function PeerProvider(props){
   const [remoteStream,setRemoteStream] = useState();
+  
   const peer = useMemo(
     () =>
       new RTCPeerConnection({
@@ -25,7 +26,7 @@ function PeerProvider(props){
   const createOffer = async()=>{
     const offer = await peer.createOffer();
     await peer.setLocalDescription(offer);
-    return offer;
+    return peer.localDescription;
   };
 
   const createAnswer  = async (offer)=>{
@@ -33,7 +34,7 @@ function PeerProvider(props){
    await peer.setRemoteDescription(offer);
 const answer = await peer.createAnswer();
 await peer.setLocalDescription(answer);
-return answer;
+return peer.localDescription;
   };
 
   const setRemoteAnswer = async(answer)=>{
@@ -45,7 +46,7 @@ return true;
 
 // sendig Vidoe
 const sendVideo = async (video)=>{
-  const tracks = video.getTracks();
+  const tracks = await video.getTracks();
   for(const track of tracks){
     peer.addTrack(track,video);
   }
@@ -53,9 +54,9 @@ const sendVideo = async (video)=>{
 }
 
 const handleSendVideo = useCallback(async(event)=>{
-  const video = event.streams;
+  const video = await event.streams[0];
   console.log("GOT TRACKS!!",video[0]);
-  setRemoteStream(video[0]);
+  setRemoteStream(video);
 },[]);
 
 
