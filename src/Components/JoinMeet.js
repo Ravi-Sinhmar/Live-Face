@@ -125,7 +125,6 @@ const removeUserData = () => {
     if (isBothVideo >= 20) {
       clearInterval(interval1);
       clearInterval(interval2);
-      alert("Fully Connected");
     }
     return () => {
       clearInterval(interval1);
@@ -401,7 +400,7 @@ return () => {
 
   const handleNeg = useCallback(async () => {
     console.log("nego need");
-    alert("neg");
+    
     const wsMessage = {
       admin:true,
       cleanUserName: adminCon,
