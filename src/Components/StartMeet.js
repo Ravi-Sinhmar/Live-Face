@@ -51,12 +51,14 @@ if(data.status === 'success'){
     });
 },[adminName]);
 
-  const copyToClipboard = () => {
-    linkRef.current.select();
-    document.execCommand('copy');
-    alert('Copy Link');
-    navigate(smallLink);
-  };
+const copyToClipboard = async () => {
+  try {
+    await navigator.clipboard.writeText(linkRef.current.value);
+    navigate(smallLink); // Replace with your actual route
+  } catch (err) {
+    console.error('Failed to copy: ', err);
+  }
+};
 
 
 
