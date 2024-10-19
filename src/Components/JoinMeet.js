@@ -191,14 +191,14 @@ const startAdminSocket = useCallback(() => {
   }, [needWebSocket, admin, meetingId]);
 
   const startUserSocket = useCallback(() => {
-    if (needWebSocket && user && joined) {
+    if (needWebSocket && user) {
         const cleanName = userName.toLowerCase().replace(/\s+/g, "");
         const newSocket = new WebSocket(
           `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.us`
         );
         setUserSocket(newSocket);
     }
-  }, [needWebSocket, meetingId, userName, user,joined]);
+  }, [needWebSocket, meetingId, userName, user]);
 
   useEffect(() => {
     startUserSocket();
