@@ -56,7 +56,7 @@ if(data.status === 'success'){
 const copyToClipboard = async () => {
   try {
     await navigator.clipboard.writeText(linkRef.current.value);
-    socket.emit("join-user", { email:"ad@gmail.com", room:'1' });
+    socket.emit("room:join", { email:"ad@gmail.com", room:'1' });
     navigate(smallLink); // Replace with your actual route
   } catch (err) {
     console.error('Failed to copy: ', err);

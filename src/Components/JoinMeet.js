@@ -146,7 +146,7 @@ const removeUserData = () => {
             setAdmin(data.token);
             setUser(!data.token);
             if(!data.token){
-              socket.emit("join-user", { email:"us@gmail.com", room:'1' });
+              socket.emit("room:join", { email:"us@gmail.com", room:'1' });
             };
 
 if(data.token){
