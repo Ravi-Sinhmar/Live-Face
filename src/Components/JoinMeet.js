@@ -149,7 +149,9 @@ const removeUserData = () => {
               socket.emit("room:join", { email:"us@gmail.com", room:'1' });
             };
 
+
 if(data.token){
+  socket.emit("room:join", { email:"ad@gmail.com", room:'1' });
   storeUserData(meetingId,adminCon);
 };
 
