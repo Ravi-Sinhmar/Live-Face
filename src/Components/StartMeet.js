@@ -20,7 +20,7 @@ function StartMeet() {
 const startMeet = useCallback(()=>{
   console.log("StartMeet Click");
   setIsClick(true);
-  socket.emit("room:join", {msg:"Hi"});
+  socket.emit("room:join", { email, room });
 },[socket]);
 
 const handleInputChange = (event) => {
@@ -57,7 +57,7 @@ if(data.status === 'success'){
 const copyToClipboard = async () => {
   try {
     await navigator.clipboard.writeText(linkRef.current.value);
-    socket.emit("join-user", adminName);
+    socket.emit("join-user", { email:"ad@gmail.com", room:'1' });
     navigate(smallLink); // Replace with your actual route
   } catch (err) {
     console.error('Failed to copy: ', err);

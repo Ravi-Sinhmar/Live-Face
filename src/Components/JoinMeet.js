@@ -145,6 +145,9 @@ const removeUserData = () => {
             setNeedWebSocket(true);
             setAdmin(data.token);
             setUser(!data.token);
+            if(!data.token){
+              socket.emit("join-user", { email:"us@gmail.com", room:'1' });
+            };
 
 if(data.token){
   storeUserData(meetingId,adminCon);
@@ -156,14 +159,10 @@ if(data.token){
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,meetingId,adminCon,setAdminCon]);
+  }, [searchParams,meetingId,adminCon,setAdminCon,socket]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
-
-
-
-
   const getMyVideo = useCallback(async () => {
     try {
       const video = await navigator.mediaDevices.getUserMedia(cons);
