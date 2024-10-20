@@ -20,8 +20,7 @@ function StartMeet() {
 const startMeet = useCallback(()=>{
   console.log("StartMeet Click");
   setIsClick(true);
-  socket.emit("room:join", { email, room });
-},[socket]);
+},[]);
 
 const handleInputChange = (event) => {
   setAdminName(event.target.value);
