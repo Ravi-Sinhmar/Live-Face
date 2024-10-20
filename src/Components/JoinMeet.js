@@ -73,9 +73,6 @@ const removeUserData = () => {
 
 
 
-  const handleUserJoin = useCallback(() => {
-    setJoined(true);
-  }, []);
 
   const checkRemoteVideoPlaying =useCallback(() => {
     const videoElement = remoteVideoRef.current;
@@ -196,8 +193,10 @@ if(data.token){
 
   const handleCallUser = useCallback(async () => {
     const offer = await createOffer();
+    alert("calling");
+    alert(remoteSocketId);
     socket.emit("user:call", { to: remoteSocketId, offer });
-  }, [remoteSocketId, socket,createOffer]);
+  }, [remoteSocketId,socket,createOffer]);
 
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
