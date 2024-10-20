@@ -190,7 +190,7 @@ if(data.token){
  
 
   const handleUserJoined = useCallback(({ email, id }) => {
-    console.log(`Email ${email} joined room`);
+    console.log(`Email ${email} joined room && id ${id}`);
     setRemoteSocketId(id);
   }, []);
 
