@@ -144,12 +144,15 @@ const removeUserData = () => {
             setUser(!data.token);
             if(!data.token){
               socket.emit("room:join", { email:"us@gmail.com", room:'1' });
+              getMyVideo();
             };
 
 
 if(data.token){
   socket.emit("room:join", { email:"ad@gmail.com", room:'1' });
+  getMyVideo();
   storeUserData(meetingId,adminCon);
+
 };
 
           }
@@ -190,8 +193,7 @@ if(data.token){
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room && id ${id}`);
     setRemoteSocketId(id);
-    getMyVideo();
-  }, [getMyVideo]);
+  }, []);
 
   const handleCallUser = useCallback(async () => {
     const offer = await createOffer();
