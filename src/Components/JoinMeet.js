@@ -111,6 +111,24 @@ const removeUserData = () => {
   // }, [isBothVideo,checkRemoteVideoPlaying]);
 
 
+  const getMyVideo = useCallback(async () => {
+    try {
+      const video = await navigator.mediaDevices.getUserMedia(cons);
+      setMyVideo(video);
+      console.log('Video tracks:', video.getVideoTracks());
+      console.log('Audio tracks:', video.getAudioTracks());
+  
+      // Set the video source to the `videoRef`
+      if (localVideoRef.current) {
+        if(audioOutput !== ""){
+          await localVideoRef.current.setSinkId(audioOutput);
+        }
+        localVideoRef.current.srcObject = video;
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+    }
+  }, [cons,audioOutput]);
 
 
 
@@ -161,30 +179,12 @@ if(data.token){
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,meetingId,adminCon,setAdminCon,socket]);
+  }, [searchParams,meetingId,adminCon,setAdminCon,socket,getMyVideo]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
 
-  const getMyVideo = useCallback(async () => {
-    try {
-      const video = await navigator.mediaDevices.getUserMedia(cons);
-      setMyVideo(video);
-      console.log('Video tracks:', video.getVideoTracks());
-      console.log('Audio tracks:', video.getAudioTracks());
-  
-      // Set the video source to the `videoRef`
-      if (localVideoRef.current) {
-        if(audioOutput !== ""){
-          await localVideoRef.current.setSinkId(audioOutput);
-        }
-        localVideoRef.current.srcObject = video;
-      }
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-    }
-  }, [cons,audioOutput]);
-
+ 
 
 
 
