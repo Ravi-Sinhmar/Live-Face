@@ -45,12 +45,7 @@ function JoinMeet() {
     remoteStream,disconnect
   } = usePeer();
 
-  const handleContinue = () => {
-    setSetting(true);
-    setShowSetting(false);
-    console.log("Constraints:", cons);
-    // Proceed with using cons
-  };
+ 
 
 
 
@@ -111,24 +106,6 @@ const removeUserData = () => {
   // }, [isBothVideo,checkRemoteVideoPlaying]);
 
 
-  const getMyVideo = useCallback(async () => {
-    try {
-      const video = await navigator.mediaDevices.getUserMedia(cons);
-      setMyVideo(video);
-      console.log('Video tracks:', video.getVideoTracks());
-      console.log('Audio tracks:', video.getAudioTracks());
-  
-      // Set the video source to the `videoRef`
-      if (localVideoRef.current) {
-        if(audioOutput !== ""){
-          await localVideoRef.current.setSinkId(audioOutput);
-        }
-        localVideoRef.current.srcObject = video;
-      }
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-    }
-  }, [cons,audioOutput]);
 
 
 
@@ -162,13 +139,13 @@ const removeUserData = () => {
             setUser(!data.token);
             if(!data.token){
               socket.emit("room:join", { email:"us@gmail.com", room:'1' });
-              getMyVideo();
+              
             };
 
 
 if(data.token){
   socket.emit("room:join", { email:"ad@gmail.com", room:'1' });
-  getMyVideo();
+  
   storeUserData(meetingId,adminCon);
 
 };
@@ -179,14 +156,38 @@ if(data.token){
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams,meetingId,adminCon,setAdminCon,socket,getMyVideo]);
+  }, [searchParams,meetingId,adminCon,setAdminCon,socket]);
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
 
- 
+  const getMyVideo = useCallback(async () => {
+    try {
+      const video = await navigator.mediaDevices.getUserMedia(cons);
+      setMyVideo(video);
+      console.log('Video tracks:', video.getVideoTracks());
+      console.log('Audio tracks:', video.getAudioTracks());
+  
+      // Set the video source to the `videoRef`
+      if (localVideoRef.current) {
+        if(audioOutput !== ""){
+          await localVideoRef.current.setSinkId(audioOutput);
+        }
+        localVideoRef.current.srcObject = video;
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+    }
+  }, [cons,audioOutput]);
 
 
+  const handleContinue = () => {
+    setSetting(true);
+    setShowSetting(false);
+    getMyVideo();
+    console.log("Constraints:", cons);
+    // Proceed with using cons
+  };
 
  
 
