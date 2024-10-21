@@ -74,41 +74,41 @@ const removeUserData = () => {
 
 
 
-  const checkRemoteVideoPlaying =useCallback(() => {
-    const videoElement = remoteVideoRef.current;
-    if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
-      setIsRemoteVideoPlaying(true);
-      setIsBothVideo(prev => prev + 1);
-    } else {
-      setIsRemoteVideoPlaying(false);
-      setIsBothVideo(0);
-    }
-  },[]) 
+  // const checkRemoteVideoPlaying =useCallback(() => {
+  //   const videoElement = remoteVideoRef.current;
+  //   if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
+  //     setIsRemoteVideoPlaying(true);
+  //     setIsBothVideo(prev => prev + 1);
+  //   } else {
+  //     setIsRemoteVideoPlaying(false);
+  //     setIsBothVideo(0);
+  //   }
+  // },[]) 
 
-  const checkMyVideoPlaying = () => {
-    const videoElement = localVideoRef.current;
-    if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
-      setMyIsVideoPlaying(true);
-      setIsBothVideo(prev => prev + 1);
+  // const checkMyVideoPlaying = () => {
+  //   const videoElement = localVideoRef.current;
+  //   if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
+  //     setMyIsVideoPlaying(true);
+  //     setIsBothVideo(prev => prev + 1);
       
-    } else {
-      setMyIsVideoPlaying(false);
-      setIsBothVideo(0);
-    }
-  };
+  //   } else {
+  //     setMyIsVideoPlaying(false);
+  //     setIsBothVideo(0);
+  //   }
+  // };
 
-  useEffect(() => {
-    const interval1 = setInterval(checkMyVideoPlaying, 1000); // Check every second
-    const interval2 = setInterval(checkRemoteVideoPlaying, 1000); // Run otherFunction every second
-    if (isBothVideo >= 20) {
-      clearInterval(interval1);
-      clearInterval(interval2);
-    }
-    return () => {
-      clearInterval(interval1);
-      clearInterval(interval2);
-    };
-  }, [isBothVideo,checkRemoteVideoPlaying]);
+  // useEffect(() => {
+  //   const interval1 = setInterval(checkMyVideoPlaying, 1000); // Check every second
+  //   const interval2 = setInterval(checkRemoteVideoPlaying, 1000); // Run otherFunction every second
+  //   if (isBothVideo >= 20) {
+  //     clearInterval(interval1);
+  //     clearInterval(interval2);
+  //   }
+  //   return () => {
+  //     clearInterval(interval1);
+  //     clearInterval(interval2);
+  //   };
+  // }, [isBothVideo,checkRemoteVideoPlaying]);
 
 
 
@@ -162,6 +162,7 @@ if(data.token){
   useEffect(() => {
     seeMeet();
   },[seeMeet]);
+
   const getMyVideo = useCallback(async () => {
     try {
       const video = await navigator.mediaDevices.getUserMedia(cons);
@@ -189,7 +190,8 @@ if(data.token){
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room && id ${id}`);
     setRemoteSocketId(id);
-  }, []);
+    getMyVideo();
+  }, [getMyVideo]);
 
   const handleCallUser = useCallback(async () => {
     const offer = await createOffer();
@@ -201,12 +203,11 @@ if(data.token){
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
       setRemoteSocketId(from);
-     getMyVideo();
       console.log(`Incoming Call`, from, offer);
       const ans = await createAnswer(offer)
       socket.emit("call:accepted", { to: from, ans });
     },
-    [socket,createAnswer,getMyVideo]
+    [socket,createAnswer]
   );
 
 
@@ -328,16 +329,16 @@ useEffect(() => {
    }, 1000);
   };
 
-  useEffect(() => {
-    if (!callStatus2 && myVideo) {
-      // Stop all media tracks
-      myVideo.getTracks().forEach(track => track.stop());
-      // Clear the video source
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = null;
-      }
-    }
-  }, [callStatus2, myVideo]);
+  // useEffect(() => {
+  //   if (!callStatus2 && myVideo) {
+  //     // Stop all media tracks
+  //     myVideo.getTracks().forEach(track => track.stop());
+  //     // Clear the video source
+  //     if (localVideoRef.current) {
+  //       localVideoRef.current.srcObject = null;
+  //     }
+  //   }
+  // }, [callStatus2, myVideo]);
 
   const handleMore = useCallback(async () => {
     window.location.reload();
