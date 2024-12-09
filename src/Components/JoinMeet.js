@@ -25,10 +25,6 @@ function JoinMeet() {
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
   const [callStatus, setCallStatus] = useState("on");
-<<<<<<< HEAD
-  const [fetching, setFetching] = useState(true);
-  
-=======
   const [callStatus2, setCallStatus2] = useState(true);
   const [showSetting, setShowSetting] = useState(true);
   const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
@@ -36,7 +32,6 @@ function JoinMeet() {
   const [isBothVideo , setIsBothVideo] = useState(0);
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
->>>>>>> a3a096c153140b42fca24d526069c0743939a036
 
   
   // contexts
@@ -139,7 +134,6 @@ const removeUserData = () => {
         .then((data) => data.json())
         .then((data) => {
           if (data.status === "success") {
-            setFetching(false);
             setNeedWebSocket(true);
             setAdmin(data.token);
             setUser(!data.token);
@@ -358,11 +352,6 @@ useEffect(() => {
   // JSX Code
 
   return (
-<<<<<<< HEAD
-    <div>
-      <div className="w-svw h-svh bg-blm  flex justify-center items-center">
-          <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
-=======
     <React.Fragment>
 
      {showSetting ? (
@@ -373,7 +362,6 @@ useEffect(() => {
         <div className="w-svw h-svh bg-blm  flex justify-center items-center sm:w-10/12  md:w-3/5 lg:w-2/5 md:aspect-square">
         <div className="bg-transparent ring-4 ring-blf rounded-lg h-full w-full flex flex-col justify-between overflow-hidden relative px-2 pt-2">
           
->>>>>>> a3a096c153140b42fca24d526069c0743939a036
             <video
               ref={localVideoRef}
               muted
@@ -517,40 +505,11 @@ useEffect(() => {
               </div>
             </div>
           </div>
-<<<<<<< HEAD
-     
-          <div className="bg-blm h-full w-full sm:w-1/2 md:w-1/4  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
-          <div className="flex flex-col w-full h-full px-2 justify-center items-center gap-3">
-          <div className="flex flex-col gap-1 justify-center">
-          <label className="text-sm text-start">Your name</label>
-            <input
-              value={fullName}
-              onChange={handleInputChange}
-              className=" border-[1px] border-blf w-4/5 py-2 px-3 bg-gray-100 rounded-md"
-              placeholder="Your name please"
-              type="text"
-            />
-          </div>
-            <button
-              className="bg-blf text-white rounded-full py-2 w-4/5 font-[500] text-lg mt-6"
-              onClick={() => {
-                setJoined(true);
-              }}
-            >
-              JOIN
-            </button>
-            </div>
-          </div>
-        
-      </div>
-    </div>
-=======
           </div>
           </div>
           
         )}
     </React.Fragment>
->>>>>>> a3a096c153140b42fca24d526069c0743939a036
   );
 }
 export default JoinMeet;
