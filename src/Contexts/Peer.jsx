@@ -6,6 +6,7 @@ export const usePeer = () =>{
 
 function PeerProvider(props){
   const [remoteStream,setRemoteStream] = useState();
+  
   const peer = useMemo(
     () =>
       new RTCPeerConnection({
@@ -15,29 +16,29 @@ function PeerProvider(props){
               "stun:stun.l.google.com:19302",
               "stun:global.stun.twilio.com:3478",
             ],
-          },
-        ],
+          }
+      ],
       }),
     []
   );
 
   // create offer
   const createOffer = async()=>{
-    const offer = peer.createOffer();
+    const offer = await peer.createOffer();
     await peer.setLocalDescription(offer);
-    return offer;
+    return peer.localDescription;
   };
 
   const createAnswer  = async (offer)=>{
   console.log("state of wbeb setremote offer",peer.connectionState);
-    peer.setRemoteDescription(offer);
+   await peer.setRemoteDescription(offer);
 const answer = await peer.createAnswer();
 await peer.setLocalDescription(answer);
-return answer;
+return peer.localDescription;
   };
 
   const setRemoteAnswer = async(answer)=>{
-    console.log("state of wbeb setremote answer",peer.connectionState);
+  console.log("state of wbeb setremote answer",peer.connectionState);
  await peer.setRemoteDescription(answer);
 return true;
   };
@@ -45,17 +46,16 @@ return true;
 
 // sendig Vidoe
 const sendVideo = async (video)=>{
-  const tracks = video.getTracks();
+  const tracks = await video.getTracks();
   for(const track of tracks){
     peer.addTrack(track,video);
   }
-
 }
 
 const handleSendVideo = useCallback(async(event)=>{
-  const video =await event.streams;
+  const video = await event.streams[0];
   console.log("GOT TRACKS!!",video[0]);
-  setRemoteStream(video[0]);
+  setRemoteStream(video);
 },[]);
 
 

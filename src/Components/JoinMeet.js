@@ -1,65 +1,133 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactPlayer from "react-player";
 import { useSearchParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-
 import { useFriend } from "./../Contexts/Friend";
 import { usePeer } from "./../Contexts/Peer";
+import { useNavigate } from "react-router-dom";
+import { useSocket } from "./../Contexts/Socket"
+import Connecting from "./Connecting";
+
 
 function JoinMeet() {
+  const socket = useSocket();
   const navigate = useNavigate();
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
   const [adminName, setAdminName] = useState(null);
-  const [userName, setUserName] = useState(null);
-  const [fullName, setFullName] = useState(null);
   const [meetingId, setMeetingId] = useState(null);
-  const [handShake, setHandShake] = useState(true);
   const [needWebSocket, setNeedWebSocket] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [finalOffer, setFinalOffer] = useState(null);
   const [admin, setAdmin] = useState(false);
   const [user, setUser] = useState(false);
   const [joined, setJoined] = useState(false);
-  const [adminSocket, setAdminSocket] = useState(null);
-  const [userSocket, setUserSocket] = useState(null);
-  const [adminSocketStatus, setAdminSocketStatus] = useState(false);
-  const [userSocketStatus, setUserSocketStatus] = useState(false);
   const [myVideo, setMyVideo] = useState(null);
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
   const [callStatus, setCallStatus] = useState("on");
+<<<<<<< HEAD
   const [fetching, setFetching] = useState(true);
   
+=======
+  const [callStatus2, setCallStatus2] = useState(true);
+  const [showSetting, setShowSetting] = useState(true);
+  const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
+  const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
+  const [isBothVideo , setIsBothVideo] = useState(0);
+  const [remoteSocketId, setRemoteSocketId] = useState(null);
+  const [myStream, setMyStream] = useState();
+>>>>>>> a3a096c153140b42fca24d526069c0743939a036
 
+  
   // contexts
-  const { adminCon, setAdminCon } = useFriend();
+  const {adminCon, setAdminCon,cons,audioOutput,setting,setSetting} = useFriend();
   const {
     peer,
     createOffer,
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,
-    disconnect,
+    remoteStream,disconnect
   } = usePeer();
 
-  const handleInputChange = (event) => {
-    let uName = event.target.value;
-    setFullName(uName);
-    uName = uName.toLowerCase().replace(/\s+/g, "");
-    setUserName(uName);
-  };
+ 
+
+
+
+const getUserData = () => {
+  const id = localStorage.getItem('userId');
+  const name = localStorage.getItem('userName');
+  return { id, name };
+};
+
+const storeUserData = (id, name) => {
+  localStorage.setItem('userId', id);
+  localStorage.setItem('userName', name);
+};
+
+const removeUserData = () => {
+  localStorage.removeItem('userId');
+  localStorage.removeItem('userName');
+};
+
+
+
+
+
+  // const checkRemoteVideoPlaying =useCallback(() => {
+  //   const videoElement = remoteVideoRef.current;
+  //   if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
+  //     setIsRemoteVideoPlaying(true);
+  //     setIsBothVideo(prev => prev + 1);
+  //   } else {
+  //     setIsRemoteVideoPlaying(false);
+  //     setIsBothVideo(0);
+  //   }
+  // },[]) 
+
+  // const checkMyVideoPlaying = () => {
+  //   const videoElement = localVideoRef.current;
+  //   if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
+  //     setMyIsVideoPlaying(true);
+  //     setIsBothVideo(prev => prev + 1);
+      
+  //   } else {
+  //     setMyIsVideoPlaying(false);
+  //     setIsBothVideo(0);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   const interval1 = setInterval(checkMyVideoPlaying, 1000); // Check every second
+  //   const interval2 = setInterval(checkRemoteVideoPlaying, 1000); // Run otherFunction every second
+  //   if (isBothVideo >= 20) {
+  //     clearInterval(interval1);
+  //     clearInterval(interval2);
+  //   }
+  //   return () => {
+  //     clearInterval(interval1);
+  //     clearInterval(interval2);
+  //   };
+  // }, [isBothVideo,checkRemoteVideoPlaying]);
+
+
+
+
+
 
   const seeMeet = useCallback(() => {
     const ad = searchParams.get("adminName");
     const mId = searchParams.get("meetingId");
     setAdminName(ad);
-    setAdminCon(ad);
     setMeetingId(mId);
-    if (adminName && meetingId) {
-      const content = { adminName, meetingId };
+    const {id ,name} = getUserData();
+    if(id === mId){
+      setAdminCon(name);
+    };
+    if (adminCon && meetingId) {
+      
+
+      const content = { adminName:adminCon, meetingId:meetingId };
       fetch(`https://facesyncbackend.onrender.com/seeMeet`, {
         method: "POST",
         credentials: "include",
@@ -75,259 +143,168 @@ function JoinMeet() {
             setNeedWebSocket(true);
             setAdmin(data.token);
             setUser(!data.token);
+            if(!data.token){
+              socket.emit("room:join", { email:"us@gmail.com", room:'1' });
+              
+            };
+
+
+if(data.token){
+  socket.emit("room:join", { email:"ad@gmail.com", room:'1' });
+  
+  storeUserData(meetingId,adminCon);
+
+};
+
           }
           if (data.status === "fail") {
           }
         })
         .catch((err) => console.log(err));
     }
-  }, [searchParams, setAdminCon, adminName, meetingId]);
+  }, [searchParams,meetingId,adminCon,setAdminCon,socket]);
   useEffect(() => {
     seeMeet();
-  }, [seeMeet]);
-
-  const startAdminSocket = useCallback(() => {
-    if (needWebSocket && admin) {
-      const newSocket = new WebSocket(
-        `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.ad`
-      );
-      setAdminSocket(newSocket);
-    }
-  }, [needWebSocket, admin, meetingId]);
-
-  const startUserSocket = useCallback(() => {
-    if (needWebSocket && user && joined) {
-      const cleanName = userName.toLowerCase().replace(/\s+/g, "");
-      const newSocket = new WebSocket(
-        `wss://facesyncbackend.onrender.com/?fullMeetId=${meetingId}__.us`
-      );
-      setUserSocket(newSocket);
-    }
-  }, [needWebSocket, meetingId, userName, user, joined]);
-
-  useEffect(() => {
-    startUserSocket();
-  }, [startUserSocket]);
-
-  useEffect(() => {
-    startAdminSocket();
-  }, [startAdminSocket]);
-
-  const handleAdminSocketStatus = () => {
-    setAdminSocketStatus(true);
-  };
-
-  const handleUserSocketStatus = () => {
-    setUserSocketStatus(true);
-  };
-
-  useEffect(() => {
-    if (adminSocket !== null) {
-      adminSocket.addEventListener("open", handleAdminSocketStatus);
-    }
-    if (userSocket !== null) {
-      userSocket.addEventListener("open", handleUserSocketStatus);
-    }
-    return () => {
-      if (adminSocket !== null) {
-        adminSocket.removeEventListener("open", handleAdminSocketStatus);
-      } else {
-        return;
-      }
-      if (userSocket !== null) {
-        userSocket.removeEventListener("open", handleUserSocketStatus);
-      } else {
-        return;
-      }
-    };
-  }, [adminSocket, userSocket]);
+  },[seeMeet]);
 
   const getMyVideo = useCallback(async () => {
     try {
-      const video = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-
+      const video = await navigator.mediaDevices.getUserMedia(cons);
       setMyVideo(video);
-      console.log("Video tracks:", video.getVideoTracks());
-      console.log("Audio tracks:", video.getAudioTracks());
-
+      console.log('Video tracks:', video.getVideoTracks());
+      console.log('Audio tracks:', video.getAudioTracks());
+  
       // Set the video source to the `videoRef`
       if (localVideoRef.current) {
+        if(audioOutput !== ""){
+          await localVideoRef.current.setSinkId(audioOutput);
+        }
         localVideoRef.current.srcObject = video;
       }
     } catch (error) {
-      console.error("Error accessing camera:", error);
+      console.error('Error accessing camera:', error);
     }
-  }, []);
-  useEffect(() => {
-    getMyVideo();
-  }, [getMyVideo]);
+  }, [cons,audioOutput]);
 
-  const getRemoteVideo = useCallback(() => {
+
+  const handleContinue = () => {
+    setSetting(true);
+    setShowSetting(false);
+    getMyVideo();
+    console.log("Constraints:", cons);
+    // Proceed with using cons
+  };
+
+ 
+
+  const handleUserJoined = useCallback(({ email, id }) => {
+    console.log(`Email ${email} joined room && id ${id}`);
+    setRemoteSocketId(id);
+  }, []);
+
+  const handleCallUser = useCallback(async () => {
+    const offer = await createOffer();
+    alert("calling");
+    alert(remoteSocketId);
+    socket.emit("user:call", { to: remoteSocketId, offer });
+  }, [remoteSocketId,socket,createOffer]);
+
+  const handleIncommingCall = useCallback(
+    async ({ from, offer }) => {
+      setRemoteSocketId(from);
+      console.log(`Incoming Call`, from, offer);
+      const ans = await createAnswer(offer)
+      socket.emit("call:accepted", { to: from, ans });
+    },
+    [socket,createAnswer]
+  );
+
+
+
+  const handleCallAccepted = useCallback(
+    ({ from, ans }) => {
+      setRemoteAnswer(ans);
+      console.log("Call Accepted!");
+      sendVideo(myVideo);
+    },
+    [sendVideo,myVideo,setRemoteAnswer]
+  );
+
+  
+  const handleNegoNeeded = useCallback(async () => {
+    const offer = await createOffer();
+    socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
+  }, [remoteSocketId, socket,createOffer]);
+
+  useEffect(() => {
+   peer.addEventListener("negotiationneeded", handleNegoNeeded);
+    return () => {
+     peer.removeEventListener("negotiationneeded", handleNegoNeeded);
+    };
+  }, [handleNegoNeeded,peer]);
+
+  const handleNegoNeedIncomming = useCallback(
+    async ({ from, offer }) => {
+      const ans = await createAnswer(offer);
+      socket.emit("peer:nego:done", { to: from, ans });
+    },
+    [socket,createAnswer]
+  );
+
+  const handleNegoNeedFinal = useCallback(async ({ ans }) => {
+    await setRemoteAnswer(ans);
+  }, [setRemoteAnswer]);
+
+
+  useEffect(() => {
+    socket.on("user:joined", handleUserJoined);
+    socket.on("incomming:call", handleIncommingCall);
+    socket.on("call:accepted", handleCallAccepted);
+    socket.on("peer:nego:needed", handleNegoNeedIncomming);
+    socket.on("peer:nego:final", handleNegoNeedFinal);
+
+    return () => {
+      socket.off("user:joined", handleUserJoined);
+      socket.off("incomming:call", handleIncommingCall);
+      socket.off("call:accepted", handleCallAccepted);
+      socket.off("peer:nego:needed", handleNegoNeedIncomming);
+      socket.off("peer:nego:final", handleNegoNeedFinal);
+    };
+  }, [
+    socket,
+    handleUserJoined,
+    handleIncommingCall,
+    handleCallAccepted,
+    handleNegoNeedIncomming,
+    handleNegoNeedFinal,
+  ]);
+
+
+
+// To reset the video stream when constraints change
+useEffect(() => {
+  if (myVideo && localVideoRef.current) {
+    localVideoRef.current.srcObject = myVideo;
+  }
+}, [myVideo, cons]);
+
+
+
+  const getRemoteVideo = useCallback(()=>{
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
     }
-  }, [remoteStream]);
+  },[remoteStream]);
 
-  useEffect(() => {
+  useEffect(()=>{
     getRemoteVideo();
-  }, [getRemoteVideo]);
+  },[getRemoteVideo]);
 
-  useEffect(() => {
-    if (adminSocketStatus) {
-      const wsMessage = {
-        admin: true,
-        cleanUserName: adminCon,
-        fullUserName: "updateMe",
-        cleanFriendName: "updateMe",
-        fullFiendName: "updateMe",
-      };
-      const adminMessageListener = async (event) => {
-        const data = JSON.parse(event.data);
-
-        if(callStatus === "off"){
-          adminSocket.send(
-            JSON.stringify({ ...wsMessage, type: "off" })
-          );
-        };
-        
-        if(data.type === "off"){
-         disconnect();
-         navigate('/');
-        };
-        // if Someone Reset or Refresh or Firsttime going on link
-        if (data.type === "userOn" || data.type === "askingOffer") {
-          const offer = await createOffer();
-          setFinalOffer(offer);
-          adminSocket.send(
-            JSON.stringify({
-              ...wsMessage,
-              type: "sendingOffer",
-              content: offer,
-            })
-          );
-        }
-        //  Getting Anser
-        if (data.type === "sendingAnswer") {
-          await setRemoteAnswer(data.content);
-        }
-
-        //  neg Anser
-        if (data.type === "negAnswer") {
-          await setRemoteAnswer(data.content);
-        }
-      };
-
-      adminSocket.send(JSON.stringify({ ...wsMessage, type: "adminOn" }));
-      // Listening for messages
-      adminSocket.addEventListener("message", adminMessageListener);
-      return () => {
-        adminSocket.removeEventListener("message", adminMessageListener);
-      };
-    }
-
-    if (userSocketStatus && joined) {
-      const wsMessage = {
-        admin: false,
-        cleanUserName: userName,
-        fullUserName: fullName,
-        cleanFriendName: adminCon,
-        fullFiendName: "updateMe",
-      };
-      const userMessageListener = async (event) => {
-        const data = JSON.parse(event.data);
-        // If admin Reset or refresh
-if(callStatus === "off"){
-  userSocket.send(
-    JSON.stringify({ ...wsMessage, type: "off" })
-  );
-};
-
-if(data.type === "off"){
- disconnect();
- navigate('/');
-};
+ 
 
 
-        if (data.type === "adminOn") {
-          userSocket.send(
-            JSON.stringify({ ...wsMessage, type: "askingOffer" })
-          );
-        }
-
-        // If getting offer
-        if (data.type === "sendingOffer") {
-          const answer = await createAnswer(data.content);
-          userSocket.send(
-            JSON.stringify({
-              ...wsMessage,
-              type: "sendingAnswer",
-              content: answer,
-            })
-          );
-        }
-
-        // If neg need
-        if (data.type === "negNeed") {
-          const answer = await createAnswer(data.content);
-          userSocket.send(
-            JSON.stringify({ ...wsMessage, type: "negAnswer", content: answer })
-          );
-        }
-      };
-
-      userSocket.send(JSON.stringify({ ...wsMessage, type: "userOn" }));
-      userSocket.addEventListener("message", userMessageListener);
-      return () => {
-        userSocket.removeEventListener("message", userMessageListener);
-      };
-    }
-  }, [
-    adminSocketStatus,
-    userSocketStatus,
-    adminCon,
-    adminSocket,
-    userSocket,
-    userName,
-    joined,
-    fullName,
-    createAnswer,
-    createOffer,
-    setRemoteAnswer,callStatus,disconnect,navigate
-  ]);
-
-  const handleNeg = useCallback(async () => {
-    console.log("nego need");
-    const wsMessage = {
-      admin: true,
-      cleanUserName: adminCon,
-      fullUserName: "updateMe",
-      cleanFriendName: "updateMe",
-      fullFiendName: "updateMe",
-    };
-    const offer = await createOffer();
-    adminSocket.send(
-      JSON.stringify({ ...wsMessage, type: "negNeed", content: offer })
-    );
-  }, [adminCon, adminSocket, createOffer]);
-
-  useEffect(() => {
-    peer.addEventListener("negotiationneeded", handleNeg);
-    return () => {
-      peer.removeEventListener("negotiationneeded", handleNeg);
-    };
-  }, [handleNeg, peer]);
-
-  useEffect(() => {
-    if (handShake) {
-      sendVideo(myVideo);
-    }
-  }, [handShake, sendVideo, myVideo]);
-
-  // NavButton Functions..........
-  const toggleMic = () => {
+   // NavButton Functions..........
+   const toggleMic = () => {
     if (myVideo) {
       const audioTrack = myVideo.getAudioTracks()[0];
       audioTrack.enabled = !isMicEnabled;
@@ -353,59 +330,90 @@ if(data.type === "off"){
 
   const cutCall = async() => {
    setCallStatus("off");
+   setCallStatus2(false);
    setTimeout(() => {
    disconnect();
-    navigate("/");
-   }, 2000);
+   removeUserData();
+   navigate("/");
+   }, 1000);
   };
 
+  // useEffect(() => {
+  //   if (!callStatus2 && myVideo) {
+  //     // Stop all media tracks
+  //     myVideo.getTracks().forEach(track => track.stop());
+  //     // Clear the video source
+  //     if (localVideoRef.current) {
+  //       localVideoRef.current.srcObject = null;
+  //     }
+  //   }
+  // }, [callStatus2, myVideo]);
+
   const handleMore = useCallback(async () => {
-    console.log("Click on More");
-  }, []);
+    window.location.reload();
+    setJoined(false);
+     setSetting(false)
+  }, [setSetting]);
 
   // JSX Code
 
   return (
+<<<<<<< HEAD
     <div>
       <div className="w-svw h-svh bg-blm  flex justify-center items-center">
           <div className="bg-transparent ring-2 rounded-lg h-full md:w-1/3 md:h-4/5   flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+=======
+    <React.Fragment>
+
+     {showSetting ? (
+        <Connecting  onContinue={handleContinue} />
+      ):
+        
+        (<div className="flex justify-center bg-blm  items-center w-svw h-svh">
+        <div className="w-svw h-svh bg-blm  flex justify-center items-center sm:w-10/12  md:w-3/5 lg:w-2/5 md:aspect-square">
+        <div className="bg-transparent ring-4 ring-blf rounded-lg h-full w-full flex flex-col justify-between overflow-hidden relative px-2 pt-2">
+          
+>>>>>>> a3a096c153140b42fca24d526069c0743939a036
             <video
               ref={localVideoRef}
               muted
               autoPlay
               playsInline
-              className="absolute right-3 top-3 rounded-md  object-cover h-24 w-16 ring-1 ring-black"
+              className="absolute right-4 top-4 rounded-md  object-cover h-28 w-20  sm:h-32 sm:w-24  ring-2 ring-blm"
             ></video>
-            <div className=" flex flex-col justify-center items-center h-full">
+            {/* <button onClick={checkRemoteVideoPlaying} className="absolute z-20 flex items-center justify-center text-center bg-blf h-14 w-14 rounded-full text-white p-1.5 right-4 bottom-24"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 flex items-center text-center justify-center">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+</svg></button> */}
+           <div className="flex flex-col justify-center items-center h-full">
               <video
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
-                className="w-full h-full  ring-2 ring-black bg-blm rounded-md  object-cover  "
+                 className="w-full h-full md:aspect-square  ring-2 ring-blt bg-blm rounded-md  object-cover"
               ></video>
             </div>
             <div className="w-full bg-transparent  py-2 flex items-center justify-center">
-              <div className="flex justify-between w-full rounded-md ring-2 ring-black items-center px-4 py-2 bg-blm h-fit ">
+            <div className="flex justify-between w-full rounded-md ring-2 ring-black items-center px-4 py-2 bg-blm h-fit ">
                 <button
                   onClick={toggleMic}
                   className="flex flex-col text-sm items-center justify-center gap-1"
                 >
                   <svg
-                    className="size-8 p-1 rounded-full"
+                     className= {!isMicEnabled ?  "size-8 p-1 bg-blf text-blm rounded-full" : "size-8 p-1 text-blt rounded-full" }   
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
                       d="M9.40135 12.5C9.63354 12.9014 9.95606 13.244 10.3411 13.5M9.17071 4C9.58254 2.83481 10.6938 2 12 2C13.6569 2 15 3.34315 15 5L15 10.5"
-                      stroke="#333333"
+                      stroke={!isMicEnabled ? "#FBFBFC" : "#444752"}
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
                     />
                     <path
                       d="M6 11C6 14.3137 8.68629 17 12 17C12.4675 17 12.9225 16.9465 13.3592 16.8454M18 11C18 11.854 17.8216 12.6663 17.5 13.4017"
-                      stroke="#333333"
+                      stroke={!isMicEnabled ? "#FBFBFC" : "#444752"}
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -415,7 +423,7 @@ if(data.type === "off"){
                       y1="18"
                       x2="12"
                       y2="20"
-                      stroke="#333333"
+                      stroke={!isMicEnabled ? "#FBFBFC" : "#444752"}
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -425,7 +433,7 @@ if(data.type === "off"){
                       y1="21"
                       x2="14"
                       y2="21"
-                      stroke="#333333"
+                      stroke={!isMicEnabled ? "#FBFBFC" : "#444752"}
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -435,7 +443,7 @@ if(data.type === "off"){
                       y1="2.03821"
                       x2="19.0382"
                       y2="19.5863"
-                      stroke="#333333"
+                      stroke={!isMicEnabled ? "#FBFBFC" : "#444752"}
                       stroke-width="2"
                       stroke-linecap="round"
                     />
@@ -453,7 +461,7 @@ if(data.type === "off"){
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    className="size-8 p-1 rounded-full"
+                    className= {!isVideoEnabled ?  "size-8 p-1 bg-blf text-blm rounded-full" : "size-8 p-1 text-blt rounded-full" }   
                   >
                     <path
                       stroke-linecap="round"
@@ -463,35 +471,19 @@ if(data.type === "off"){
                   </svg>
                   Stop
                 </button>
-                <button
-                  onClick={cutCall}
-                  className="flex flex-col text-sm items-center justify-center gap-1"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="size-8 p-1 bg-ble text-blm rounded-full"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M15.22 3.22a.75.75 0 0 1 1.06 0L18 4.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L19.06 6l1.72 1.72a.75.75 0 0 1-1.06 1.06L18 7.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L16.94 6l-1.72-1.72a.75.75 0 0 1 0-1.06ZM1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  Disconnect
-                </button>
+                {user || admin ? <button className="z-10 w-fit bg-blf text-blm px-6 text-sm font-[400] flex text-center items-center justify-center py-2 rounded-full  ring-1 ring-blt shadow-md shadow-blt h-fit" onClick={!joined && !admin ? handleCallUser : cutCall}>{!joined && user ? "Join" : "Disconnect"}</button> : null } 
                 <button
                   onClick={toggleRemoteAudio}
                   className="flex flex-col text-sm items-center justify-center gap-1"
                 >
-                  <svg
+                  <svg 
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    className="size-8 p-1 rounded-full"
+                    className= {!isRemoteAudioEnabled ?  "size-8 p-1 bg-blf text-blm rounded-full" : "size-8 p-1 text-blt rounded-full" }   
+
                   >
                     <path
                       stroke-linecap="round"
@@ -525,6 +517,7 @@ if(data.type === "off"){
               </div>
             </div>
           </div>
+<<<<<<< HEAD
      
           <div className="bg-blm h-full w-full sm:w-1/2 md:w-1/4  flex flex-col justify-between overflow-hidden relative px-2 pt-2">
           <div className="flex flex-col w-full h-full px-2 justify-center items-center gap-3">
@@ -551,6 +544,13 @@ if(data.type === "off"){
         
       </div>
     </div>
+=======
+          </div>
+          </div>
+          
+        )}
+    </React.Fragment>
+>>>>>>> a3a096c153140b42fca24d526069c0743939a036
   );
 }
 export default JoinMeet;
