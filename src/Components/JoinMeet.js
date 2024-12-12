@@ -205,10 +205,12 @@ if(data.token){
     async ({ from, offer }) => {
       setRemoteSocketId(from);
       console.log(`Incoming Call`, from, offer);
-      const ans = await createAnswer(offer)
+      const ans = await createAnswer(offer);
+
       socket.emit("call:accepted", { to: from, ans });
+    sendVideo(myVideo);
     },
-    [socket,createAnswer]
+    [socket,createAnswer,sendVideo]
   );
 
 
