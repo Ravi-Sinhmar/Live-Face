@@ -10,9 +10,6 @@ export const useSocket = () => {
 
 export const SocketProvider = (props) => {
   const socket = useMemo(() => io("https://facesyncbackend.onrender.com"), []);
-
-  
-
   return (
     <SocketContext.Provider value={socket}>
       {props.children}
