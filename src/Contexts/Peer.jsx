@@ -39,7 +39,7 @@ return peer.localDescription;
   };
 
   const setRemoteAnswer = async(answer)=>{
-  console.log("state of wbeb setremote answer",peer.connectionState);
+  alert(peer.connectionState);
  await peer.setRemoteDescription(answer);
 return true;
   };
