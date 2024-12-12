@@ -51,6 +51,7 @@ return true;
 
 // sending Video
 const sendVideo = async (video)=>{
+  alert("SendVideo");
   const tracks = await video.getTracks();
   for(const track of tracks){
     peer.addTrack(track,video);
