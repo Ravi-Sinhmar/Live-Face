@@ -7,6 +7,8 @@ export const usePeer = () =>{
 
 function PeerProvider(props){
   const [remoteStream,setRemoteStream] = useState();
+  const [adminConnection,setAdminConnection] = useState(null);
+  const [userConnection,setUserConnection] = useState(null);
   
   const peer = useMemo(
     () =>
@@ -32,6 +34,7 @@ function PeerProvider(props){
 
   const createAnswer  = async (offer)=>{
   alert(peer.connectionState);
+  setAdminConnection(peer.connectionState);
    await peer.setRemoteDescription(offer);
 const answer = await peer.createAnswer();
 await peer.setLocalDescription(answer);
@@ -40,12 +43,13 @@ return peer.localDescription;
 
   const setRemoteAnswer = async(answer)=>{
   alert(peer.connectionState);
+  setUserConnection(peer.connectionState);
  await peer.setRemoteDescription(answer);
 return true;
   };
 
 
-// sendig Vidoe
+// sending Video
 const sendVideo = async (video)=>{
   const tracks = await video.getTracks();
   for(const track of tracks){
@@ -65,10 +69,8 @@ useEffect(()=>{
   peer.addEventListener('track',handleSendVideo);
   return ()=>{
     peer.removeEventListener('track',handleSendVideo);
-    
   }
-
-},[peer,handleSendVideo]);
+},[peer,handleSendVideo,userConnection,adminConnection]);
 
    // close connection
    const disconnect = useCallback(() => {
