@@ -179,6 +179,7 @@ if(data.token){
     ({ from, ans }) => {
       setRemoteAnswer(ans);
       console.log("Call Accepted!");
+      setRemoteSocketId(from);
       sendVideo(myVideo);
     },
     [sendVideo,myVideo,setRemoteAnswer]
@@ -201,6 +202,7 @@ if(data.token){
   const handleNegoNeedIncomming = useCallback(
     async ({ from, offer }) => {
       const ans = await createAnswer(offer);
+      setRemoteSocketId(from);
       socket.emit("peer:nego:done", { to: from, ans }); // 7th Message
       setDoneTrack(true);
 
