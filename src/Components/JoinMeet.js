@@ -203,18 +203,25 @@ if(data.token){
   }, [remoteSocketId,socket,createOffer]);
 
 
- useEffect(async ()=>{
-  // First Click will be by User  [call:user , call:accepted, nego:needed]
-  if(user && needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')){
-    alert("2nd click auto")
-   await handleCallUser();
-  }
-   else if(user && needTrack && !doneTrack){
-      alert("first click auto");
-    await  handleCallUser();
-      
-    }
- },[handleCallUser,adminConnection,userConnection,needTrack,doneTrack]);
+  useEffect(() => {
+    const autoClickHandler = async () => {
+      try {
+        // First Click will be by User [call:user , call:accepted, nego:needed]
+        if (user && needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')) {
+          alert("2nd click auto");
+          await handleCallUser();
+        } else if (user && needTrack && !doneTrack) {
+          alert("first click auto");
+          await handleCallUser();
+        }
+      } catch (error) {
+        console.error("Error during auto click:", error);
+      }
+    };
+  
+    autoClickHandler(); // Call the async function
+  }, [handleCallUser, adminConnection, userConnection, needTrack, doneTrack, user]);
+  
 
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
