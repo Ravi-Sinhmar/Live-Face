@@ -199,20 +199,20 @@ if(data.token){
 
   const handleCallUser = useCallback(async () => {
     const offer = await createOffer();
-   
       socket.emit("user:call", { to: remoteSocketId, offer }); // 1st messsge , 4th Message , 8th-> test
   }, [remoteSocketId,socket,createOffer]);
 
 
  useEffect(()=>{
   // First Click will be by User  [call:user , call:accepted, nego:needed]
-    if(user && needTrack && !doneTrack){
+  if(user && needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')){
+    alert("2nd click auto")
+    handleCallUser();
+  }
+   else if(user && needTrack && !doneTrack){
       alert("first click auto");
       handleCallUser();
       
-    }else if(user && needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')){
-      alert("2nd click auto")
-      handleCallUser();
     }
  },[handleCallUser,adminConnection,userConnection,needTrack,doneTrack]);
 
