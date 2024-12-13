@@ -207,13 +207,14 @@ if(data.token){
 
  useEffect(()=>{
   // First Click will be by User  [call:user , call:accepted, nego:needed]
-  if(needTrack && !doneTrack){
+  if(needTrack && !doneTrack && joinClick < 4){
     handleCallUser();
     setJoinClick(prevJoinClick => prevJoinClick + 1);
-  }else if(needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')){
+  }else if(needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected') && joinClick < 4){
     handleCallUser();
+    setJoinClick(prevJoinClick => prevJoinClick + 1);
   }
- },[handleCallUser,adminConnection,userConnection]);
+ },[handleCallUser,adminConnection,userConnection,needTrack,doneTrack]);
 
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
