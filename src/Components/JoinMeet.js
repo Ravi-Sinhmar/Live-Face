@@ -31,7 +31,7 @@ function JoinMeet() {
   const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
   const [isBothVideo , setIsBothVideo] = useState(0);
   const [remoteSocketId, setRemoteSocketId] = useState(null);
-  const [joinClick, setJoinClick] = useState(0);
+  const [joinClick, setJoinClick] = useState(1);
   const [needTrack,setNeedTrack] = useState(false);
   const [doneTrack,setDoneTrack] = useState(false);
 
@@ -207,13 +207,19 @@ if(data.token){
 
  useEffect(()=>{
   // First Click will be by User  [call:user , call:accepted, nego:needed]
-  if(needTrack && !doneTrack && joinClick < 4){
-    handleCallUser();
-    setJoinClick(prevJoinClick => prevJoinClick + 1);
-  }else if(needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected') && joinClick < 4){
-    handleCallUser();
-    setJoinClick(prevJoinClick => prevJoinClick + 1);
+  if(joinClick < 4){
+    if(needTrack && !doneTrack){
+      handleCallUser();
+      const newJoin = joinClick + 1;
+      setJoinClick(newJoin);
+    }else if(needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')){
+      handleCallUser();
+      const newJoin = joinClick + 1;
+      setJoinClick(newJoin);
+    }
+
   }
+ 
  },[handleCallUser,adminConnection,userConnection,needTrack,doneTrack]);
 
   const handleIncommingCall = useCallback(
