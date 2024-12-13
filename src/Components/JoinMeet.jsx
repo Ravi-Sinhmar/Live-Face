@@ -147,9 +147,7 @@ if(data.token){
     const autoClickHandler = async () => {
       try {
         // First Click will be by User [call:user , call:accepted, nego:needed]
-        if (user && needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')) {
-          await handleCallUser();
-        } else if (user && needTrack && !doneTrack) {
+        if (user && needTrack && doneTrack && userConnection !== 'connected' ) {
           await handleCallUser();
         }else if(userConnection === 'connected'){
          console.log("User Connected");
