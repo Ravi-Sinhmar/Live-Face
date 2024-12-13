@@ -204,11 +204,11 @@ if(data.token){
   }, [remoteSocketId,socket,createOffer]);
 
 
- useEffect(()=>{
-  if(adminConnection !== 'connected' || userConnection !== 'connected'){
-handleCallUser();
-  }
- },[handleCallUser,adminConnection,userConnection]);
+//  useEffect(()=>{
+//   if(adminConnection !== 'connected' || userConnection !== 'connected'){
+// handleCallUser();
+//   }
+//  },[handleCallUser,adminConnection,userConnection]);
 
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
