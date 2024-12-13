@@ -46,13 +46,20 @@ function PeerProvider(props) {
     return true;
   };
 
-  // sending Video
-  const sendVideo = async (video) => {
-    const tracks = await video.getTracks();
-    for (const track of tracks) {
+// Initialize a set to keep track of added tracks
+const addedTrackIds = new Set();
+
+// sending Video
+const sendVideo = async (video) => {
+  const tracks = await video.getTracks();
+  for (const track of tracks) {
+    if (!addedTrackIds.has(track.id)) { // Check if the track ID is already added
       peer.addTrack(track, video);
+      addedTrackIds.add(track.id); // Add the track ID to the set
     }
-  };
+  }
+};
+
 
   const handleSendVideo = useCallback(async (event) => {
     const video = await event.streams[0];
