@@ -42,7 +42,7 @@ function JoinMeet() {
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,disconnect
+    remoteStream,disconnect,adminConnection,userConnection
   } = usePeer();
 
  
@@ -198,8 +198,9 @@ if(data.token){
     const offer = await createOffer();
     alert("calling");
     alert(remoteSocketId);
+    if(adminConnection != 'connected' || userConnection != 'connected')
     socket.emit("user:call", { to: remoteSocketId, offer });
-  }, [remoteSocketId,socket,createOffer]);
+  }, [remoteSocketId,socket,createOffer,adminConnection,userConnection]);
 
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
