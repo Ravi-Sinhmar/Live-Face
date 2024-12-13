@@ -208,10 +208,8 @@ if(data.token){
       try {
         // First Click will be by User [call:user , call:accepted, nego:needed]
         if (user && needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')) {
-          alert("2nd click auto");
           await handleCallUser();
         } else if (user && needTrack && !doneTrack) {
-          alert("first click auto");
           await handleCallUser();
         }
       } catch (error) {
@@ -230,7 +228,7 @@ if(data.token){
       const ans = await createAnswer(offer);
 
       socket.emit("call:accepted", { to: from, ans }); // 2nd message , 5th Message , 9th ->testing
-    sendVideo(myVideo);
+      sendVideo(myVideo);
     },
     [socket,createAnswer,sendVideo]
   );
