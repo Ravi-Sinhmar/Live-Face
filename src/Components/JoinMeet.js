@@ -198,9 +198,15 @@ if(data.token){
     const offer = await createOffer();
     alert("calling");
     alert(remoteSocketId);
-    if(adminConnection != 'connected' || userConnection != 'connected')
     socket.emit("user:call", { to: remoteSocketId, offer });
-  }, [remoteSocketId,socket,createOffer,adminConnection,userConnection]);
+  }, [remoteSocketId,socket,createOffer]);
+
+
+useEffect(()=>{
+  if(adminConnection != 'connected' || userConnection != 'connected'){
+    socket.emit("user:call", { to: remoteSocketId, offer });
+  }
+},[adminConnection,userConnection]);
 
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
@@ -242,6 +248,7 @@ if(data.token){
     async ({ from, offer }) => {
       const ans = await createAnswer(offer);
       socket.emit("peer:nego:done", { to: from, ans });
+
     },
     [socket,createAnswer]
   );
