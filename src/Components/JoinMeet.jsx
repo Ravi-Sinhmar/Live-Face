@@ -158,7 +158,7 @@ if(data.token){
     };
   
     autoClickHandler(); // Call the async function
-  }, [handleCallUser, adminConnection, userConnection, needTrack, doneTrack, user]);
+  }, [handleCallUser, userConnection, needTrack, doneTrack, user]);
   
 
   const handleIncommingCall = useCallback(
