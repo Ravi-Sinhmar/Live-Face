@@ -442,7 +442,6 @@ useEffect(() => {
                   </svg>
                   Stop
                 </button>
-                 <button className="z-10 w-fit bg-blf text-blm px-6 text-sm font-[400] flex text-center items-center justify-center py-2 rounded-full  ring-1 ring-blt shadow-md shadow-blt h-fit" onClick={userConnection !== 'connected' && !admin ? handleCallUser : cutCall}>{userConnection !== 'connected' && !admin ? "Join" : "Disconnect"}</button>
                 <button
                   onClick={toggleRemoteAudio}
                   className="flex flex-col text-sm items-center justify-center gap-1"
@@ -463,27 +462,10 @@ useEffect(() => {
                   </svg>
                   Silence
                 </button>
+                 <button className="z-10 w-fit bg-blf text-blm px-6 text-sm font-[400] flex text-center items-center justify-center py-2 rounded-full  ring-1 ring-blt shadow-md shadow-blt h-fit" onClick={userConnection !== 'connected' && !admin ? handleCallUser : cutCall}>{userConnection !== 'connected' && !admin ? "Join" : "Disconnect"}</button>
+               
 
-                <button
-                  onClick={handleMore}
-                  className="flex flex-col text-sm items-center justify-center gap-1"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    className="size-8 p-1 rounded-full"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
-                    />
-                  </svg>
-                  More
-                </button>
+            
               </div>
             </div>
           </div>
