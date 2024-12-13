@@ -1,11 +1,9 @@
 import React, { useState, useCallback ,useRef } from "react";
-import { useFriend } from "./../Contexts/Friend";
+import { useFriend } from "../Contexts/Friend";
 import Loader from "./Loader";
 import { useNavigate } from 'react-router-dom';
 import { RandomString } from "../JavaScriptFun/RandomString";
-import { useSocket } from "./../Contexts/Socket"
 function StartMeet() {
- const socket = useSocket();
  const [isClick, setIsClick] = useState(false);
  const [adminName, setAdminName] = useState('');
  const [isLoading,setIsLoading] = useState(false);

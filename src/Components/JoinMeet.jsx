@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import ReactPlayer from "react-player";
 import { useSearchParams } from "react-router-dom";
-import { useFriend } from "./../Contexts/Friend";
-import { usePeer } from "./../Contexts/Peer";
+import { useFriend } from "../Contexts/Friend";
+import { usePeer } from "../Contexts/Peer";
 import { useNavigate } from "react-router-dom";
-import { useSocket } from "./../Contexts/Socket"
-import Connecting from "./Connecting";
+import { useSocket } from "../Contexts/Socket"
+import Setting from "./Setting";
 
 
 function JoinMeet() {
@@ -36,7 +35,7 @@ function JoinMeet() {
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,disconnect,adminConnection,userConnection,setAdminConnection,setUserConnection
+    remoteStream,disconnect,adminConnection,userConnection
   } = usePeer();
 
  
@@ -212,9 +211,7 @@ if(data.token){
     await setRemoteAnswer(ans);
   }, [setRemoteAnswer]);
 
-  const handleSetting = useCallback(async ({ from }) => {
-  alert("Next Person is changing Input/Outputs")
-  }, []);
+
 
   const handleDisconnect = useCallback(async ({ from }) => {
     setTimeout(() => {
@@ -231,7 +228,6 @@ if(data.token){
     socket.on("call:accepted", handleCallAccepted);
     socket.on("peer:nego:needed", handleNegoNeedIncomming);
     socket.on("peer:nego:final", handleNegoNeedFinal);
-    socket.on('setting:update',handleSetting);
     socket.on('cut',handleDisconnect);
 
     return () => {
@@ -240,7 +236,6 @@ if(data.token){
       socket.off("call:accepted", handleCallAccepted);
       socket.off("peer:nego:needed", handleNegoNeedIncomming);
       socket.off("peer:nego:final", handleNegoNeedFinal);
-      socket.off("setting:update", handleSetting);
       socket.off("cut", handleDisconnect);
     };
   }, [
@@ -250,7 +245,6 @@ if(data.token){
     handleCallAccepted,
     handleNegoNeedIncomming,
     handleNegoNeedFinal,
-    handleSetting,
     handleDisconnect
   ]);
 
@@ -262,7 +256,6 @@ useEffect(() => {
     localVideoRef.current.srcObject = myVideo;
   }
 }, [myVideo, cons]);
-
 
 
   const getRemoteVideo = useCallback(()=>{
@@ -312,25 +305,6 @@ useEffect(() => {
    }, 1000);
   };
 
-  // useEffect(() => {
-  //   if (!callStatus2 && myVideo) {
-  //     // Stop all media tracks
-  //     myVideo.getTracks().forEach(track => track.stop());
-  //     // Clear the video source
-  //     if (localVideoRef.current) {
-  //       localVideoRef.current.srcObject = null;
-  //     }
-  //   }
-  // }, [callStatus2, myVideo]);
-
-  const handleMore =  () => {
-    setShowSetting(true);
-    setAdminConnection("settingUpdate");
-    setUserConnection("settingUpdate");
-    setNeedTrack(false);
-    setDoneTrack(false);
-    socket.emit("setting:update", {to:remoteSocketId});
-  };
 
   // JSX Code
 
@@ -338,7 +312,7 @@ useEffect(() => {
     <React.Fragment>
 
      {showSetting ? (
-        <Connecting  onContinue={handleContinue} />
+        <Setting  onContinue={handleContinue} />
       ):
         
         (<div className="flex justify-center bg-blm  items-center w-svw h-svh">

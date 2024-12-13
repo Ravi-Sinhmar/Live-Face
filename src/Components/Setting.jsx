@@ -1,5 +1,5 @@
 import React , {useCallback, useEffect, useRef, useState} from "react";
-import { useFriend } from "./../Contexts/Friend";
+import { useFriend } from "../Contexts/Friend";
 import Loader from "./Loader";
 
 function Setting({onContinue}) {
@@ -7,7 +7,7 @@ function Setting({onContinue}) {
     const audioOutputEl =useRef(null);
     const videoInputEl =useRef(null);
     const [isLoading,setIsLoading] = useState(false);
-    const {setCons,setAudioOutput,setSetting} = useFriend();
+    const {setCons,setAudioOutput} = useFriend();
     const getStream = useCallback(async () => {
         try{
           const permission =  await navigator.mediaDevices.getUserMedia({video:true,audio:true});
