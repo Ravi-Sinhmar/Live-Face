@@ -191,7 +191,7 @@ if(data.token){
   const handleNegoNeeded = useCallback(async () => {
     const offer = await createOffer();
     socket.emit("peer:nego:needed", { offer, to: remoteSocketId }); //3rd Message ,  // 6th Message
-    setNeedTrack(true);
+  
   }, [remoteSocketId, socket,createOffer]);
 
   useEffect(() => {
@@ -205,6 +205,7 @@ if(data.token){
     async ({ from, offer }) => {
       const ans = await createAnswer(offer);
       setRemoteSocketId(from);
+      setNeedTrack(true);
       socket.emit("peer:nego:done", { to: from, ans }); // 7th Message
       setDoneTrack(true);
 
