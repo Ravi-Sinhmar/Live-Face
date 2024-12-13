@@ -151,6 +151,8 @@ if(data.token){
           await handleCallUser();
         } else if (user && needTrack && !doneTrack) {
           await handleCallUser();
+        }else if(userConnection === 'connected'){
+         console.log("User Connected");
         }
       } catch (error) {
         console.error("Error during auto click:", error);
