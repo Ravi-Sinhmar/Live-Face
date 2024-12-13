@@ -232,7 +232,7 @@ if(data.token){
     socket.on("peer:nego:needed", handleNegoNeedIncomming);
     socket.on("peer:nego:final", handleNegoNeedFinal);
     socket.on('setting:update',handleSetting);
-    socket.on('disconnect',handleDisconnect);
+    socket.on('cut',handleDisconnect);
 
     return () => {
       socket.off("user:joined", handleUserJoined);
@@ -241,7 +241,7 @@ if(data.token){
       socket.off("peer:nego:needed", handleNegoNeedIncomming);
       socket.off("peer:nego:final", handleNegoNeedFinal);
       socket.off("setting:update", handleSetting);
-      socket.off("disconnect", handleDisconnect);
+      socket.off("cut", handleDisconnect);
     };
   }, [
     socket,
@@ -304,7 +304,7 @@ useEffect(() => {
   };
 
   const cutCall = async() => {
-   socket.emit("disconnect", {to:remoteSocketId});
+   socket.emit("cut", {to:remoteSocketId});
    setTimeout(() => {
    disconnect();
    removeUserData();
