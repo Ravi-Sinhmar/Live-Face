@@ -306,13 +306,13 @@ useEffect(() => {
   //   }
   // }, [callStatus2, myVideo]);
 
-  const handleMore = useCallback(async () => {
+  const handleMore =  () => {
     setShowSetting(true);
     setNeedTrack(false);
     setDoneTrack(false);
     setUserConnection("settingOpen");
     setAdminConnection("settingOpen");
-  }, []);
+  };
 
   // JSX Code
 
