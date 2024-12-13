@@ -213,7 +213,7 @@ if(data.token){
   }, [setRemoteAnswer]);
 
   const handleSetting = useCallback(async ({ from }) => {
-   window.location.reload();
+  alert("Next Person is changing Input/Outputs")
   }, []);
 
   const handleDisconnect = useCallback(async ({ from }) => {
@@ -325,8 +325,11 @@ useEffect(() => {
 
   const handleMore =  () => {
     setShowSetting(true);
+    setAdminConnection("settingUpdate");
+    setUserConnection("settingUpdate");
+    setNeedTrack(false);
+    setDoneTrack(false);
     socket.emit("setting:update", {to:remoteSocketId});
-    window.location.reload();
   };
 
   // JSX Code
