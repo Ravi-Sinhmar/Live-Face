@@ -170,18 +170,23 @@ function JoinMeet() {
     [socket, createAnswer]
   );
 
-  useEffect(()=>{
-    if(userConnection === 'connected' || adminConnection === 'connected'){
-      sendVideo(myVideo);
-    }
-  },[userConnection,adminConnection,myVideo,sendVideo]);
+  useEffect(() => {
+    const asyncSendVideo = async () => {
+      if (userConnection === "connected" || adminConnection === "connected") {
+        await sendVideo(myVideo);
+        // Ensure sendVideo is awaited
+      }
+    };
+    asyncSendVideo();
+    // Call the async function
+  }, [userConnection, adminConnection, myVideo, sendVideo]);
+
   const handleCallAccepted = useCallback(
     ({ from, ans }) => {
       setRemoteAnswer(ans);
       console.log("Call Accepted!");
-      
     },
-    [ setRemoteAnswer]
+    [setRemoteAnswer]
   );
 
   const handleNegoNeeded = useCallback(async () => {
