@@ -166,18 +166,22 @@ function JoinMeet() {
       const ans = await createAnswer(offer);
 
       socket.emit("call:accepted", { to: from, ans }); // 2nd message , 5th Message , 9th ->testing
-      sendVideo(myVideo);
     },
-    [socket, createAnswer, sendVideo]
+    [socket, createAnswer]
   );
 
+  useEffect(()=>{
+    if(userConnection === 'connected' || adminConnection === 'connected'){
+      sendVideo(myVideo);
+    }
+  },[userConnection,adminConnection,myVideo,sendVideo]);
   const handleCallAccepted = useCallback(
     ({ from, ans }) => {
       setRemoteAnswer(ans);
       console.log("Call Accepted!");
-      sendVideo(myVideo);
+      
     },
-    [sendVideo, myVideo, setRemoteAnswer]
+    [ setRemoteAnswer]
   );
 
   const handleNegoNeeded = useCallback(async () => {

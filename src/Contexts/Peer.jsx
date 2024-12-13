@@ -48,7 +48,7 @@ function PeerProvider(props) {
 
 // sending Video
 const sendVideo = async (video) => {
-  if (!video) { console.error('Video stream is null.'); return; }
+  if (!video) {  return; }
   const tracks = await video.getTracks();
   const senders = peer.getSenders();
 
