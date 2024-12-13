@@ -38,7 +38,7 @@ function JoinMeet() {
 
   
   // contexts
-  const {adminCon, setAdminCon,cons,audioOutput,setting,setSetting} = useFriend();
+  const {adminCon, setAdminCon,cons,audioOutput} = useFriend();
   const {
     peer,
     createOffer,
@@ -479,7 +479,7 @@ useEffect(() => {
                   </svg>
                   Stop
                 </button>
-                {user || admin ? <button className="z-10 w-fit bg-blf text-blm px-6 text-sm font-[400] flex text-center items-center justify-center py-2 rounded-full  ring-1 ring-blt shadow-md shadow-blt h-fit" onClick={!joined && !admin ? handleCallUser : cutCall}>{userConnection !== 'connected' && user ? "Join" : "Disconnect"}</button> : null } 
+                 <button className="z-10 w-fit bg-blf text-blm px-6 text-sm font-[400] flex text-center items-center justify-center py-2 rounded-full  ring-1 ring-blt shadow-md shadow-blt h-fit" onClick={userConnection !== 'connected' && !admin ? handleCallUser : cutCall}>{userConnection !== 'connected' && !admin ? "Join" : "Disconnect"}</button>
                 <button
                   onClick={toggleRemoteAudio}
                   className="flex flex-col text-sm items-center justify-center gap-1"
