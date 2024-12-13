@@ -33,7 +33,6 @@ function PeerProvider(props){
   };
 
   const createAnswer  = async (offer)=>{
-  alert(peer.connectionState);
   setAdminConnection(peer.connectionState);
    await peer.setRemoteDescription(offer);
 const answer = await peer.createAnswer();
@@ -42,7 +41,6 @@ return peer.localDescription;
   };
 
   const setRemoteAnswer = async(answer)=>{
-  alert(peer.connectionState);
   setUserConnection(peer.connectionState);
  await peer.setRemoteDescription(answer);
 return true;
@@ -51,7 +49,6 @@ return true;
 
 // sending Video
 const sendVideo = async (video)=>{
-  alert("SendVideo");
   const tracks = await video.getTracks();
   for(const track of tracks){
     peer.addTrack(track,video);
@@ -61,7 +58,6 @@ const sendVideo = async (video)=>{
 const handleSendVideo = useCallback(async(event)=>{
   const video = await event.streams[0];
   console.log("GOT TRACKS!!",video[0]);
-  alert("Track Listen");
   setRemoteStream(video);
 },[]);
 

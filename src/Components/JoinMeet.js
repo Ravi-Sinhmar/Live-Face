@@ -199,27 +199,18 @@ if(data.token){
 
   const handleCallUser = useCallback(async () => {
     const offer = await createOffer();
-    alert("calling");
-    alert(remoteSocketId);
+   
       socket.emit("user:call", { to: remoteSocketId, offer }); // 1st messsge , 4th Message , 8th-> test
   }, [remoteSocketId,socket,createOffer]);
 
 
  useEffect(()=>{
   // First Click will be by User  [call:user , call:accepted, nego:needed]
-  if(joinClick < 4){
     if(needTrack && !doneTrack){
       handleCallUser();
-      const newJoin = joinClick + 1;
-      setJoinClick(newJoin);
     }else if(needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')){
       handleCallUser();
-      const newJoin = joinClick + 1;
-      setJoinClick(newJoin);
     }
-
-  }
- 
  },[handleCallUser,adminConnection,userConnection,needTrack,doneTrack]);
 
   const handleIncommingCall = useCallback(
