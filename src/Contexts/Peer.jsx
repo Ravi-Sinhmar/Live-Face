@@ -46,16 +46,16 @@ function PeerProvider(props) {
     return true;
   };
 
-// Initialize a set to keep track of added tracks
-const addedTrackIds = new Set();
-
 // sending Video
 const sendVideo = async (video) => {
   const tracks = await video.getTracks();
+  const senders = peer.getSenders();
+
   for (const track of tracks) {
-    if (!addedTrackIds.has(track.id)) { // Check if the track ID is already added
+    const senderExists = senders.some(sender => sender.track && sender.track.id === track.id);
+
+    if (!senderExists) {
       peer.addTrack(track, video);
-      addedTrackIds.add(track.id); // Add the track ID to the set
     }
   }
 };
