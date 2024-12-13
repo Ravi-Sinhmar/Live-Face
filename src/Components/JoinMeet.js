@@ -212,6 +212,18 @@ if(data.token){
     await setRemoteAnswer(ans);
   }, [setRemoteAnswer]);
 
+  const handleSetting = useCallback(async ({ from }) => {
+   window.location.reload();
+  }, []);
+
+  const handleDisconnect = useCallback(async ({ from }) => {
+    setTimeout(() => {
+      disconnect();
+      removeUserData();
+      navigate("/");
+      }, 1000);
+   }, []);
+  
 
   useEffect(() => {
     socket.on("user:joined", handleUserJoined);
@@ -219,6 +231,8 @@ if(data.token){
     socket.on("call:accepted", handleCallAccepted);
     socket.on("peer:nego:needed", handleNegoNeedIncomming);
     socket.on("peer:nego:final", handleNegoNeedFinal);
+    socket.on('setting:update',handleSetting);
+    socket.on('disconnect',handleDisconnect);
 
     return () => {
       socket.off("user:joined", handleUserJoined);
@@ -226,6 +240,8 @@ if(data.token){
       socket.off("call:accepted", handleCallAccepted);
       socket.off("peer:nego:needed", handleNegoNeedIncomming);
       socket.off("peer:nego:final", handleNegoNeedFinal);
+      socket.off("setting:update", handleSetting);
+      socket.off("disconnect", handleDisconnect);
     };
   }, [
     socket,
@@ -234,6 +250,8 @@ if(data.token){
     handleCallAccepted,
     handleNegoNeedIncomming,
     handleNegoNeedFinal,
+    handleSetting,
+    handleDisconnect
   ]);
 
 
@@ -286,8 +304,7 @@ useEffect(() => {
   };
 
   const cutCall = async() => {
-
-
+   socket.emit("disconnect", {to:remoteSocketId});
    setTimeout(() => {
    disconnect();
    removeUserData();
@@ -308,11 +325,8 @@ useEffect(() => {
 
   const handleMore =  () => {
     setShowSetting(true);
-    setNeedTrack(false);
-    setDoneTrack(false);
-    setUserConnection("settingOpen");
-    setAdminConnection("settingOpen");
-    disconnect();
+    socket.emit("setting:update", {to:remoteSocketId});
+    window.location.reload();
   };
 
   // JSX Code
