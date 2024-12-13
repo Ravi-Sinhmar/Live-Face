@@ -127,7 +127,6 @@ if(data.token){
     setShowSetting(false);
     getMyVideo();
     console.log("Constraints:", cons);
-    handleCallUser();
     // Proceed with using cons
   };
 
@@ -313,6 +312,7 @@ useEffect(() => {
     setDoneTrack(false);
     setUserConnection("settingOpen");
     setAdminConnection("settingOpen");
+    disconnect();
   };
 
   // JSX Code
