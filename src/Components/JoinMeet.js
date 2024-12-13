@@ -183,7 +183,6 @@ if(data.token){
 
 
   const handleContinue = () => {
-    setSetting(true);
     setShowSetting(false);
     getMyVideo();
     console.log("Constraints:", cons);
@@ -367,10 +366,8 @@ useEffect(() => {
   // }, [callStatus2, myVideo]);
 
   const handleMore = useCallback(async () => {
-    window.location.reload();
-    setJoined(false);
-     setSetting(false)
-  }, [setSetting]);
+    alert("Click on More");
+  }, []);
 
   // JSX Code
 
@@ -482,7 +479,7 @@ useEffect(() => {
                   </svg>
                   Stop
                 </button>
-                {user || admin ? <button className="z-10 w-fit bg-blf text-blm px-6 text-sm font-[400] flex text-center items-center justify-center py-2 rounded-full  ring-1 ring-blt shadow-md shadow-blt h-fit" onClick={!joined && !admin ? handleCallUser : cutCall}>{!joined && user ? "Join" : "Disconnect"}</button> : null } 
+                {user || admin ? <button className="z-10 w-fit bg-blf text-blm px-6 text-sm font-[400] flex text-center items-center justify-center py-2 rounded-full  ring-1 ring-blt shadow-md shadow-blt h-fit" onClick={!joined && !admin ? handleCallUser : cutCall}>{userConnection !== 'connected' && user ? "Join" : "Disconnect"}</button> : null } 
                 <button
                   onClick={toggleRemoteAudio}
                   className="flex flex-col text-sm items-center justify-center gap-1"
