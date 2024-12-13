@@ -13,25 +13,16 @@ function JoinMeet() {
   const navigate = useNavigate();
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
-  const [adminName, setAdminName] = useState(null);
   const [meetingId, setMeetingId] = useState(null);
-  const [needWebSocket, setNeedWebSocket] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [admin, setAdmin] = useState(false);
   const [user, setUser] = useState(false);
-  const [joined, setJoined] = useState(false);
   const [myVideo, setMyVideo] = useState(null);
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
-  const [callStatus, setCallStatus] = useState("on");
-  const [callStatus2, setCallStatus2] = useState(true);
   const [showSetting, setShowSetting] = useState(true);
-  const [isRemoteVideoPlaying, setIsRemoteVideoPlaying] = useState(false);
-  const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
-  const [isBothVideo , setIsBothVideo] = useState(0);
   const [remoteSocketId, setRemoteSocketId] = useState(null);
-  const [joinClick, setJoinClick] = useState(1);
   const [needTrack,setNeedTrack] = useState(false);
   const [doneTrack,setDoneTrack] = useState(false);
 
@@ -45,7 +36,7 @@ function JoinMeet() {
     createAnswer,
     setRemoteAnswer,
     sendVideo,
-    remoteStream,disconnect,adminConnection,userConnection
+    remoteStream,disconnect,adminConnection,userConnection,setAdminConnection,setUserConnection
   } = usePeer();
 
  
@@ -69,54 +60,8 @@ const removeUserData = () => {
 };
 
 
-
-
-
-  // const checkRemoteVideoPlaying =useCallback(() => {
-  //   const videoElement = remoteVideoRef.current;
-  //   if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
-  //     setIsRemoteVideoPlaying(true);
-  //     setIsBothVideo(prev => prev + 1);
-  //   } else {
-  //     setIsRemoteVideoPlaying(false);
-  //     setIsBothVideo(0);
-  //   }
-  // },[]) 
-
-  // const checkMyVideoPlaying = () => {
-  //   const videoElement = localVideoRef.current;
-  //   if (videoElement && videoElement.readyState >= 3 && !videoElement.paused && !videoElement.ended) {
-  //     setMyIsVideoPlaying(true);
-  //     setIsBothVideo(prev => prev + 1);
-      
-  //   } else {
-  //     setMyIsVideoPlaying(false);
-  //     setIsBothVideo(0);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const interval1 = setInterval(checkMyVideoPlaying, 1000); // Check every second
-  //   const interval2 = setInterval(checkRemoteVideoPlaying, 1000); // Run otherFunction every second
-  //   if (isBothVideo >= 20) {
-  //     clearInterval(interval1);
-  //     clearInterval(interval2);
-  //   }
-  //   return () => {
-  //     clearInterval(interval1);
-  //     clearInterval(interval2);
-  //   };
-  // }, [isBothVideo,checkRemoteVideoPlaying]);
-
-
-
-
-
-
   const seeMeet = useCallback(() => {
-    const ad = searchParams.get("adminName");
     const mId = searchParams.get("meetingId");
-    setAdminName(ad);
     setMeetingId(mId);
     const {id ,name} = getUserData();
     if(id === mId){
@@ -135,20 +80,16 @@ const removeUserData = () => {
         .then((data) => data.json())
         .then((data) => {
           if (data.status === "success") {
-            setNeedWebSocket(true);
+         
             setAdmin(data.token);
             setUser(!data.token);
             if(!data.token){
               socket.emit("room:join", { email:"us@gmail.com", room:'1' });
               
             };
-
-
 if(data.token){
   socket.emit("room:join", { email:"ad@gmail.com", room:'1' });
-  
   storeUserData(meetingId,adminCon);
-
 };
 
           }
@@ -345,8 +286,8 @@ useEffect(() => {
   };
 
   const cutCall = async() => {
-   setCallStatus("off");
-   setCallStatus2(false);
+
+
    setTimeout(() => {
    disconnect();
    removeUserData();
@@ -366,7 +307,11 @@ useEffect(() => {
   // }, [callStatus2, myVideo]);
 
   const handleMore = useCallback(async () => {
-    alert("Click on More");
+    setShowSetting(true);
+    setNeedTrack(false);
+    setDoneTrack(false);
+    setUserConnection("settingOpen");
+    setAdminConnection("settingOpen");
   }, []);
 
   // JSX Code
@@ -491,7 +436,6 @@ useEffect(() => {
                     stroke-width="1.5"
                     stroke="currentColor"
                     className= {!isRemoteAudioEnabled ?  "size-8 p-1 bg-blf text-blm rounded-full" : "size-8 p-1 text-blt rounded-full" }   
-
                   >
                     <path
                       stroke-linecap="round"
