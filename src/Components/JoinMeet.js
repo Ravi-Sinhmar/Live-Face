@@ -207,8 +207,11 @@ if(data.token){
  useEffect(()=>{
   // First Click will be by User  [call:user , call:accepted, nego:needed]
     if(needTrack && !doneTrack){
+      alert("first click auto");
       handleCallUser();
+      
     }else if(needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')){
+      alert("2nd click auto")
       handleCallUser();
     }
  },[handleCallUser,adminConnection,userConnection,needTrack,doneTrack]);
