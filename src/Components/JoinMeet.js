@@ -127,6 +127,7 @@ if(data.token){
     setShowSetting(false);
     getMyVideo();
     console.log("Constraints:", cons);
+    handleCallUser();
     // Proceed with using cons
   };
 
