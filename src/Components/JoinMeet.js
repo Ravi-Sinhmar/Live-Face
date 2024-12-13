@@ -31,7 +31,10 @@ function JoinMeet() {
   const [isMyVideoPlaying, setMyIsVideoPlaying] = useState(false);
   const [isBothVideo , setIsBothVideo] = useState(0);
   const [remoteSocketId, setRemoteSocketId] = useState(null);
-  const [myStream, setMyStream] = useState();
+  const [joinClick, setJoinClick] = useState(0);
+  const [needTrack,setNeedTrack] = useState(false);
+  const [doneTrack,setDoneTrack] = useState(false);
+
 
   
   // contexts
@@ -198,17 +201,19 @@ if(data.token){
     const offer = await createOffer();
     alert("calling");
     alert(remoteSocketId);
-   
-      socket.emit("user:call", { to: remoteSocketId, offer });
-    
+      socket.emit("user:call", { to: remoteSocketId, offer }); // 1st messsge , 4th Message , 8th-> test
   }, [remoteSocketId,socket,createOffer]);
 
 
-//  useEffect(()=>{
-//   if(adminConnection !== 'connected' || userConnection !== 'connected'){
-// handleCallUser();
-//   }
-//  },[handleCallUser,adminConnection,userConnection]);
+ useEffect(()=>{
+  // First Click will be by User  [call:user , call:accepted, nego:needed]
+  if(needTrack && !doneTrack){
+    handleCallUser();
+    setJoinClick(prevJoinClick => prevJoinClick + 1);
+  }else if(needTrack && doneTrack && (userConnection !== 'connected' || adminConnection !== 'connected')){
+    handleCallUser();
+  }
+ },[handleCallUser,adminConnection,userConnection]);
 
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
@@ -216,7 +221,7 @@ if(data.token){
       console.log(`Incoming Call`, from, offer);
       const ans = await createAnswer(offer);
 
-      socket.emit("call:accepted", { to: from, ans });
+      socket.emit("call:accepted", { to: from, ans }); // 2nd message , 5th Message , 9th ->testing
     sendVideo(myVideo);
     },
     [socket,createAnswer,sendVideo]
@@ -236,7 +241,8 @@ if(data.token){
   
   const handleNegoNeeded = useCallback(async () => {
     const offer = await createOffer();
-    socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
+    socket.emit("peer:nego:needed", { offer, to: remoteSocketId }); //3rd Message ,  // 6th Message
+    setNeedTrack(true);
   }, [remoteSocketId, socket,createOffer]);
 
   useEffect(() => {
@@ -249,7 +255,8 @@ if(data.token){
   const handleNegoNeedIncomming = useCallback(
     async ({ from, offer }) => {
       const ans = await createAnswer(offer);
-      socket.emit("peer:nego:done", { to: from, ans });
+      socket.emit("peer:nego:done", { to: from, ans }); // 7th Message
+      setDoneTrack(true);
 
     },
     [socket,createAnswer]
